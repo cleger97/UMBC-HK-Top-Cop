@@ -214,6 +214,7 @@ public class Player : MonoBehaviour {
 		}
 
 		if (!isBlocking && totalDamage > 0) {
+			
 			currentHealth -= totalDamage;
 			UpdateHealth ();
 		} 
@@ -297,7 +298,7 @@ public class Player : MonoBehaviour {
 			currentHits = 0;
 		}
 			
-		Debug.Log (currentHits);
+		//Debug.Log (currentHits);
 
 		anim.SetBool ("idle", false);
 
@@ -389,9 +390,11 @@ public class Player : MonoBehaviour {
 			currInvulTime = invulTime;
 		}
 	}
-
+		
 	void UpdateHealth() {
-
+		Debug.Log ("Update Health");
+		Debug.Log (currentHealth);
+		Debug.Log (maxHealth);
 		rend.color = Color.red;
 		// five frames to fix red
 		isRed = true;
@@ -431,6 +434,8 @@ public class Player : MonoBehaviour {
 		// post-kill things here
 		// i.e. partial heal 
 		currentHealth += 25;
+
+		UpdateHealth ();
 	}
 
 	public bool IsPlayerAlive()
