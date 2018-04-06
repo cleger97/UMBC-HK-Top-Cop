@@ -27,11 +27,13 @@ public class Player : MonoBehaviour {
 	private List<State> states;
 
 	// Hit List
-	private List<int> damageList;
-	private int totalDamage;
+	private List<int> leftDamageList;
+    private List<int> rightDamageList;
 
-	// animator
-	private Animator anim;
+    private int leftTotalDamage;
+    private int rightTotalDamage;
+    // animator
+    private Animator anim;
 
 	// various state variables
 	// blocking:
@@ -111,7 +113,8 @@ public class Player : MonoBehaviour {
 
 		// state list
 		states = new List<State> ();
-		damageList = new List<int> ();
+		leftDamageList = new List<int> ();
+        rightDamageList = new List<int>();
 		// animation tools
 		anim = GetComponent<Animator> ();
 
@@ -209,18 +212,31 @@ public class Player : MonoBehaviour {
 		}
 
 		// Handle the damage input
-		for (int i = 0; i < damageList.Count; i++) {
-			totalDamage += damageList [i];
+		for (int i = 0; i < leftDamageList.Count; i++) {
+			leftTotalDamage += leftDamageList [i];
 		}
+        for (int i = 0; i < rightDamageList.Count; i++)
+        {
+            rightTotalDamage += rightDamageList[i];
+        }
 
-		if (!isBlocking && totalDamage > 0) {
-			
+        if (!isBlocking && (leftTotalDamage > 0|| rightTotalDamage > 0)) {
+            int totalDamage = leftTotalDamage + rightTotalDamage;
 			currentHealth -= totalDamage;
 			UpdateHealth ();
-		} 
-		totalDamage = 0;
-		damageList.Clear ();
-			
+		}
+        else if (isBlocking){
+            if (faceDirection == 1 && leftTotalDamage > 0)
+                currentHealth -= leftTotalDamage;
+            else if (faceDirection == -1 && rightTotalDamage > 0)
+                currentHealth -= rightTotalDamage;
+            UpdateHealth();
+        }
+         
+		leftTotalDamage = 0;
+        rightTotalDamage = 0;
+        leftDamageList.Clear ();
+        rightDamageList.Clear();	
 		// Clear the input list
 		alreadyInput = false;
 		states.Clear ();
@@ -384,9 +400,12 @@ public class Player : MonoBehaviour {
 
 	// Get hit: damage and knockback value
 	// Adds it to the damage list, to be calculated
-	public void GetHit(int damage) {
+	public void GetHit(int damage,int direction) {
 		if (currInvulTime == 0) {
-			damageList.Add (damage);
+            if (direction == -1)
+                rightDamageList.Add(damage);
+            else
+                leftDamageList.Add(damage);
 			currInvulTime = invulTime;
 		}
 	}

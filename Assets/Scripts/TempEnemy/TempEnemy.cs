@@ -74,10 +74,10 @@ public class TempEnemy: Enemy
 						if (checkInAttack.Length > 0) {
 							float distance = player.transform.position.x - this.transform.position.x;
 							int direction = (int) Mathf.Sign (distance);
-
+                            Debug.Log("Direction = " + direction);
 							// direction will be 1 for player on right side and -1 for player
 							// on left side
-							player.GetComponent<Player> ().GetHit (damage);
+							player.GetComponent<Player> ().GetHit (damage,direction);
 						}
 						timer = attkCoolDown;
 					}
