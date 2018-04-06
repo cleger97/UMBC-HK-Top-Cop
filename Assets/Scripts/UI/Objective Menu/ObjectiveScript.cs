@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ObjectiveScript : MonoBehaviour {
 
@@ -26,9 +27,37 @@ public class ObjectiveScript : MonoBehaviour {
 
 	private bool isVictory = false;
 
+	// UI handle
+	public bool UIShow = false;
+
+	void Awake() {
+		// If a level manager and objective script already exist destroy this new one
+		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 2) {
+			Destroy (this.gameObject);
+		}
+		// Otherwise, Objective Script shouldn't be destroyed on load.
+		DontDestroyOnLoad (this);
+
+		if (SceneManager.GetActiveScene () == SceneManager.GetSceneByName (LevelManager.levels [0])) {
+			foreach (Transform objects in transform) {
+				objects.gameObject.SetActive (false);
+
+			}
+			UIShow = false;
+		}
+	}
+
 	// Use this for initialization
 	void Start () {
 		
+	}
+
+	public void ActivateObjects() {
+		foreach (Transform objects in transform) {
+			objects.gameObject.SetActive (true);
+		}
+		UIShow = true;
+
 	}
 
     public void SetGoalType(int type, int goal)

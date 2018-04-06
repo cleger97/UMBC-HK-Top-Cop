@@ -12,10 +12,12 @@ public class MenuUIHandle : MonoBehaviour {
     // This way it can access the other children
 
     GameObject text, button1, button2, button3;
-	string menuSceneName = "menu";
-	string currSceneName = "Scene 1 - beta";
+	string menuSceneName = LevelManager.levels[0];
+	string currSceneName = LevelManager.levels[1];
 	int textNum = 0, button1Num = 1, button2Num = 2, button3Num = 3;
 	bool paused = false;
+
+	LevelManager levelManager;
 
     void Awake ()
     {
@@ -27,6 +29,8 @@ public class MenuUIHandle : MonoBehaviour {
 		button1.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (RestartLoad);
 		button2.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (ReturnLoad);
 		button3.transform.GetChild (0).GetComponent<Button> ().onClick.AddListener (ResumeGame);
+
+		levelManager = GameObject.Find ("Level Manager").GetComponent<LevelManager> ();
 
     }
 
@@ -96,6 +100,7 @@ public class MenuUIHandle : MonoBehaviour {
 	{
 		Debug.Log ("Clicked!");
 		SceneManager.LoadScene (menuSceneName, LoadSceneMode.Single);
+		levelManager.UpdateLevel (0);
 		Time.timeScale = 1;
 	}
 
