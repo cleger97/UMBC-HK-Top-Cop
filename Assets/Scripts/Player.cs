@@ -406,7 +406,7 @@ public class Player : MonoBehaviour {
                 rightDamageList.Add(damage);
             else
                 leftDamageList.Add(damage);
-			currInvulTime = invulTime;
+			//currInvulTime = invulTime;
 		}
 	}
 		
