@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
 
-	public static string[] levels = { "menu", "Scene 1" };
+	public static string[] levels = { "menu", "Scene 1", "Victory" };
 	public int currentLevel;
 
 	private ObjectiveScript objectiveHandle;
@@ -44,6 +44,10 @@ public class LevelManager : MonoBehaviour {
 			// todo: throw some victory stuff here
 		} else {
 			SceneManager.LoadScene (levels [currentLevel], LoadSceneMode.Single);
+		}
+
+		if (levels [currentLevel] == "Victory") {
+			objectiveHandle.Victory ();
 		}
 	}
 

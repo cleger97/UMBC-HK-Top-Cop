@@ -12,6 +12,8 @@ public class ObjectiveScript : MonoBehaviour {
 
 	public MenuUIHandle MenuHandler;
 
+	private LevelManager levelManager;
+
     // initiate to kill counter
     private int currentGoal = (int)TypeOfGoal.KillCounter;
 
@@ -37,6 +39,8 @@ public class ObjectiveScript : MonoBehaviour {
 		}
 		// Otherwise, Objective Script shouldn't be destroyed on load.
 		DontDestroyOnLoad (this);
+
+		levelManager = GameObject.Find ("Level Manager").GetComponent<LevelManager> ();
 
 		if (SceneManager.GetActiveScene () == SceneManager.GetSceneByName (LevelManager.levels [0])) {
 			foreach (Transform objects in transform) {
@@ -98,7 +102,7 @@ public class ObjectiveScript : MonoBehaviour {
 
         if (killCount >= killGoal && !isVictory)
         {
-			Victory();
+			levelManager.NextLevel ();
             // victory or whatever goes here
             // TODO: implement victory
         }
