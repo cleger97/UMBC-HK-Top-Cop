@@ -15,11 +15,11 @@ public class ImageTransparent : MonoBehaviour {
 	// Why is this not supported by the unity editor...?
 	void Start () {
 		Color ci = counterImage.color;
-		ci.a = 0.4f;
+		ci.a = 0.6f;
 		counterImage.color = ci;
 
 		Color gi = goalImage.color;
-		gi.a = 0.4f;
+		gi.a = 0.6f;
 		goalImage.color = gi;
 	}
 
