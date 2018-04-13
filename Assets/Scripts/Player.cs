@@ -136,7 +136,7 @@ public class Player : MonoBehaviour {
 		currentHealth = maxHealth;
 
 		// init objective
-		objectiveHandle.SetGoalType(0, 10);
+		// objectiveHandle.SetGoalType(0, 10);
 
 	}
 
