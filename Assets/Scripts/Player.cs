@@ -411,9 +411,9 @@ public class Player : MonoBehaviour {
 	}
 		
 	void UpdateHealth() {
-		Debug.Log ("Update Health");
-		Debug.Log (currentHealth);
-		Debug.Log (maxHealth);
+		//Debug.Log ("Update Health");
+		//Debug.Log (currentHealth);
+		//Debug.Log (maxHealth);
 		rend.color = Color.red;
 		// five frames to fix red
 		isRed = true;

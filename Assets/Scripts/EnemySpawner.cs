@@ -4,39 +4,51 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public Player_Data playerData;
+    
+    private Player playerData;
     public GameObject enemy;
-    private float spawnTime = 7f;
+    private Enemy enemyData;
+
+    private const float checkRate = 0.5f;
+    private const float spawnRate = 2f;
+
+    private float repeatRate = 3f;
+    private float startSpawn = 5f;
     public Transform[] spawnPoints;
-    private int totalEnemySpawned = 0;
+    private int numWaves = 1;
     private int doubleEnemySize = 5;
-    private int numToSpawn = 0;
+    private int numToSpawn = 1;
     // Use this for initialization
     void Start()
     {
-        InvokeRepeating("Spawn", spawnTime, spawnTime);
+        playerData = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        enemyData = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
+        InvokeRepeating("Spawn", startSpawn, repeatRate);
     }
 
     // Update is called once per frame
     void Spawn()
     {
-        if (totalEnemySpawned % doubleEnemySize == 0)
-        {
-            numToSpawn++;
-            spawnTime = 7f;
-        }
-        if (totalEnemySpawned % doubleEnemySize / 4 == 0 && spawnTime >3)
-            spawnTime -= 1f;
-
-        if (playerData.isPlayerAlive() == false)
+        if (playerData.IsPlayerAlive() == false)
         {
             return;
         }
-        
-        for (int i = 0; i < numToSpawn; i++) {
-            int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-            Instantiate(enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+
+        //Only start spawning when there is only 1/3 of enemies left.
+        if (enemyData.return_num_enemy() <= numToSpawn / 3)
+        {
+            Debug.Log("Num_enemy = " + enemyData.return_num_enemy() + "curr spawn rate = " + numToSpawn);
+            for (int i = 0; i < numToSpawn; i++)
+            {
+                int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+                Instantiate(enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+            }
+            numWaves++;
+            numToSpawn++;
+            repeatRate = spawnRate;
         }
-        totalEnemySpawned++;
+        else
+            repeatRate = checkRate;
+        
     }
 }

@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class TempEnemy: Enemy
 {
-	public GameObject healthBar;
+   
+    public override int return_num_enemy()
+    {
+        return num_enemy_alive;
+    }
+    public GameObject healthBar;
 	public float maxHealth;
 	public float currHealth;
 	public int damage;
@@ -27,6 +32,7 @@ public class TempEnemy: Enemy
 	// Use this for initialization
 	void Start ()
 	{
+        num_enemy_alive++;
 		maxHealth = 50f;
 		currHealth = maxHealth;
 		player = GameObject.FindGameObjectWithTag ("Player");
@@ -39,7 +45,7 @@ public class TempEnemy: Enemy
 	// Update is called once per frame
 	void Update ()
 	{
-       
+        Debug.Log("Current num of enemy:" + num_enemy_alive);
 		if (timeRed > 0) {
 			timeRed -= Time.deltaTime;
 		} else
@@ -74,7 +80,7 @@ public class TempEnemy: Enemy
 						if (checkInAttack.Length > 0) {
 							float distance = player.transform.position.x - this.transform.position.x;
 							int direction = (int) Mathf.Sign (distance);
-                            Debug.Log("Direction = " + direction);
+                            //Debug.Log("Direction = " + direction);
 							// direction will be 1 for player on right side and -1 for player
 							// on left side
 							player.GetComponent<Player> ().GetHit (damage,direction);
@@ -85,19 +91,24 @@ public class TempEnemy: Enemy
 					//anim.SetBool("InArea", true);
 					anim.SetBool ("Attack", false);
 					Vector2 toMove;
-					if (player.GetComponent<Player> ().IsPlayerAlive ()) {
-						if (player.transform.position.x > transform.position.x) {
-							anim.SetInteger ("speed", (int)moveSpeed);
-							toMove = new Vector2 (moveSpeed, GetComponent<Rigidbody2D> ().velocity.y);
-							transform.localScale = new Vector3 (-1, transform.localScale.y, transform.localScale.z);
-						} else {
-							anim.SetInteger ("speed", (int)moveSpeed);
-							transform.localScale = new Vector3 (1, transform.localScale.y, transform.localScale.z);
-							toMove = new Vector2 (-moveSpeed, GetComponent<Rigidbody2D> ().velocity.y);
-						}
-						GetComponent<Rigidbody2D> ().velocity = toMove;
-					}
-                 
+                    if (player.GetComponent<Player>().IsPlayerAlive()) {
+                        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= 5) {
+                            if (player.transform.position.x > transform.position.x) {
+                                anim.SetInteger("speed", (int)moveSpeed);
+                                toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                                transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+                            } else {
+                                anim.SetInteger("speed", (int)moveSpeed);
+                                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+                                toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                            }
+                            GetComponent<Rigidbody2D>().velocity = toMove;
+                        }
+                        else
+                        {
+
+                        }
+                    }
 				}
 			} else {
 				anim.SetBool ("InArea", false);
@@ -157,6 +168,8 @@ public class TempEnemy: Enemy
 		GetComponent<Rigidbody2D> ().velocity = new Vector2 (0, 0);
 		playerData.updateKill ();
 		this.enabled = false;
+        num_enemy_alive--;
+        Debug.Log("Subtract one");
 		if (currHealth <= 0)
 			Destroy (gameObject, 0.25f);
 	}
