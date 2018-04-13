@@ -95,12 +95,21 @@ public class Player : MonoBehaviour {
 	// Assign core objects in Awake()
 	void Awake() {
 		// objective stuff
-		objectiveHandle = GameObject.Find("Objective Canvas").GetComponent<ObjectiveScript>();
-		enemyCounter = GameObject.Find ("Objective Canvas").transform.GetChild (0).GetComponent<Text> ();
+		if (GameObject.Find ("Objective Canvas") != null) {
+			objectiveHandle = GameObject.Find ("Objective Canvas").GetComponent<ObjectiveScript> ();
+		} else {
+			objectiveHandle = null;
+		}
 
-		// health stuff
-		healthBar = GameObject.Find ("Objective Canvas").transform.GetChild (2);
-		hpbar_text = healthBar.GetChild (2).GetComponent<Text> ();
+
+		if (objectiveHandle != null) {
+			enemyCounter = GameObject.Find ("Objective Canvas").transform.GetChild (0).GetComponent<Text> ();
+
+			// health stuff
+			healthBar = GameObject.Find ("Objective Canvas").transform.GetChild (2);
+			hpbar_text = healthBar.GetChild (2).GetComponent<Text> ();
+		}
+
 
 		// attack tool
 		dmgArea = transform.GetChild (2).transform;
@@ -448,7 +457,10 @@ public class Player : MonoBehaviour {
 	// update the counters
 	public void updateKill()
 	{
-		objectiveHandle.UpdateKillCount(1);
+		if (objectiveHandle != null) {
+			objectiveHandle.UpdateKillCount(1);
+		}
+
 
 		// post-kill things here
 		// i.e. partial heal 
