@@ -104,10 +104,6 @@ public class TempEnemy: Enemy
                             }
                             GetComponent<Rigidbody2D>().velocity = toMove;
                         }
-                        else
-                        {
-
-                        }
                     }
 				}
 			} else {
