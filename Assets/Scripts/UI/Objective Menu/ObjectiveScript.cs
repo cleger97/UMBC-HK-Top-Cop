@@ -36,7 +36,7 @@ public class ObjectiveScript : MonoBehaviour {
 
 	void Awake() {
 		// If a level manager and objective script already exist destroy this new one
-		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 2) {
+		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 3) {
 			Destroy (this.gameObject);
 		}
 		// Otherwise, Objective Script shouldn't be destroyed on load.
@@ -131,10 +131,19 @@ public class ObjectiveScript : MonoBehaviour {
         }
     }
 
+	public void Defeat() {
+		goalText.gameObject.transform.parent.gameObject.SetActive (false);
+		progressText.gameObject.transform.parent.gameObject.SetActive (false);
+		UIShow = false;
+	}
+
 	public void Victory() {
 		isVictory = true;
 		goalText.text = "Success!";
 		progressText.text = "";
+
+		goalText.gameObject.transform.parent.gameObject.SetActive (false);
+		progressText.gameObject.transform.parent.gameObject.SetActive (false);
 
 		this.transform.GetChild (healthBar).gameObject.SetActive (false);
 	}

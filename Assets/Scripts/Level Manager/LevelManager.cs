@@ -17,7 +17,7 @@ public class LevelManager : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 		// If a level manager and objective script already exist destroy this new one
-		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 2) {
+		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 3) {
 			Destroy (this.gameObject);
 		}
 		// Otherwise, Level Managers shouldn't be destroyed on load.

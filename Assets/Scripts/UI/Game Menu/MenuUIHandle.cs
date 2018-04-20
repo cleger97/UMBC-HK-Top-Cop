@@ -11,33 +11,42 @@ public class MenuUIHandle : MonoBehaviour {
     // Attach this class to UI Canvas
     // This way it can access the other children
 
-    GameObject text, button1, button2, button3;
+    GameObject text, button1, button2, button3, gameOver;
 	string menuSceneName = LevelManager.levels[0];
 	string currSceneName = LevelManager.levels[1];
-	int textNum = 0, button1Num = 1, button2Num = 2, button3Num = 3;
+	int textNum = 0, button1Num = 2, button2Num = 3, button3Num = 4, gameOverScreen = 1;
 	bool paused = false;
+
+	ObjectiveScript objective;
 
 	LevelManager levelManager;
 
     void Awake ()
     {
-
+		// If a level manager and objective script and a menu UI already exist destroy this new one
+		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 3) {
+			Destroy (this.gameObject);
+		}
 		DontDestroyOnLoad (this);
         text = transform.GetChild(textNum).gameObject;
         button1 = transform.GetChild(button1Num).gameObject;
         button2 = transform.GetChild(button2Num).gameObject;
 		button3 = transform.GetChild(button3Num).gameObject;
+		gameOver = transform.GetChild (gameOverScreen).gameObject;
 
-		button1.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (RestartLoad);
-		button2.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (ReturnLoad);
-		button3.transform.GetChild (0).GetComponent<Button> ().onClick.AddListener (ResumeGame);
+
 
 		levelManager = GameObject.Find ("Level Manager").GetComponent<LevelManager> ();
 
+		objective = GameObject.Find ("Objective Canvas").GetComponent<ObjectiveScript> ();
     }
 
 	// Use this for initialization
 	void Start () {
+		button1.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (RestartLoad);
+		button2.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (ReturnLoad);
+		button3.transform.GetChild (0).GetComponent<Button> ().onClick.AddListener (ResumeGame);
+
         text.SetActive(false);
         button1.SetActive(false);
         button2.SetActive(false);
@@ -78,6 +87,8 @@ public class MenuUIHandle : MonoBehaviour {
 	}
 
 	public void Defeat() {
+		gameOver.SetActive (true);
+		objective.Defeat ();
 		text.SetActive(true);
 		text.GetComponent<Text> ().text = "Defeat";
 		text.GetComponent<Text> ().color = Color.red;
@@ -90,9 +101,19 @@ public class MenuUIHandle : MonoBehaviour {
 		text.GetComponent<Text>().text = title;
 	}
 
+	public void DisableObjects() {
+		gameOver.SetActive (false);
+		button1.SetActive (false);
+		button2.SetActive (false);
+		button3.SetActive (false);
+		text.SetActive (false);
+	}
 
 	public void RestartLoad() 
 	{
+		DisableObjects ();
+
+		objective.ActivateObjects ();
 		Debug.Log ("Clicked!");
 		SceneManager.LoadScene(currSceneName, LoadSceneMode.Single);
 		Time.timeScale = 1;
@@ -100,6 +121,8 @@ public class MenuUIHandle : MonoBehaviour {
 
 	public void ReturnLoad() 
 	{
+		DisableObjects ();
+
 		Debug.Log ("Clicked!");
 		SceneManager.LoadScene (menuSceneName, LoadSceneMode.Single);
 		levelManager.UpdateLevel (0);
@@ -108,10 +131,7 @@ public class MenuUIHandle : MonoBehaviour {
 
 	public void ResumeGame() {
 		Debug.Log ("Clicked!");
-		button1.SetActive (false);
-		button2.SetActive (false);
-		button3.SetActive (false);
-		text.SetActive (false);
+		DisableObjects ();
 
 		paused = false;
 
