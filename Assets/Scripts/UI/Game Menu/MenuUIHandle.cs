@@ -21,6 +21,8 @@ public class MenuUIHandle : MonoBehaviour {
 
     void Awake ()
     {
+
+		DontDestroyOnLoad (this);
         text = transform.GetChild(textNum).gameObject;
         button1 = transform.GetChild(button1Num).gameObject;
         button2 = transform.GetChild(button2Num).gameObject;
