@@ -339,6 +339,7 @@ public class Player : MonoBehaviour {
 		anim.speed = 1f;
 
 		for (int i = 0; i < checkInAttack.Length; i++) {
+            
 			Enemy enemyScript = checkInAttack [i].transform.GetComponent<Enemy> ();
 			// Calculate Angle Between the collision point and the player
 			Vector3 dir = checkInAttack [i].transform.position - transform.position;
@@ -351,8 +352,9 @@ public class Player : MonoBehaviour {
 			checkInAttack [i].transform.GetComponent<Rigidbody2D> ().AddForce (dir * baseKBForce);
 
 			if (enemyScript != null) {
-				// Check for attack cooldown
-				// animation timer should be set somewhere to make sure attacks hit at the same time
+                // Check for attack cooldown
+                // animation timer should be set somewhere to make sure attacks hit at the same time
+
 				enemyScript.takeDamage (baseDamage);
 				animTimer = attackCD;
 

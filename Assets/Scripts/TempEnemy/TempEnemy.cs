@@ -1,14 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TempEnemy: Enemy
 {
    
-    public override int return_num_enemy()
-    {
-        return num_enemy_alive;
-    }
+   
     public GameObject healthBar;
 	public float maxHealth;
 	public float currHealth;
@@ -45,7 +43,7 @@ public class TempEnemy: Enemy
 	// Update is called once per frame
 	void Update ()
 	{
-        Debug.Log("Current num of enemy:" + num_enemy_alive);
+        //Debug.Log("Current num of enemy:" + num_enemy_alive);
 		if (timeRed > 0) {
 			timeRed -= Time.deltaTime;
 		} else
@@ -59,10 +57,10 @@ public class TempEnemy: Enemy
 			if (timer > 0)
 				timer -= Time.deltaTime;
 
-			GameObject[] check = colliderTagSorter ("Player", getAllAround (detectionCircleRadius, transform));
+			GameObject[] check = Enemy.colliderTagSorter ("Player", Enemy.getAllAround (detectionCircleRadius, transform));
 			if (check.Length > 0) {
 				GameObject player = check [0];
-				GameObject[] checkInAttack = colliderTagSorter ("Player", getAllAround (attackCircleRadius, dmgArea));
+				GameObject[] checkInAttack = Enemy.colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
 				if (player.GetComponent<Player> ().IsPlayerAlive () == false) {
 					endGame ();
 				}
@@ -76,7 +74,7 @@ public class TempEnemy: Enemy
 						while (timer2 > 0) {
 							timer2 -= Time.deltaTime;
 						}
-						checkInAttack = colliderTagSorter ("Player", getAllAround (attackCircleRadius, dmgArea));
+						checkInAttack = Enemy.colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
 						if (checkInAttack.Length > 0) {
 							float distance = player.transform.position.x - this.transform.position.x;
 							int direction = (int) Mathf.Sign (distance);
@@ -104,6 +102,7 @@ public class TempEnemy: Enemy
                             }
                             GetComponent<Rigidbody2D>().velocity = toMove;
                         }
+
                     }
 				}
 			} else {
@@ -112,8 +111,11 @@ public class TempEnemy: Enemy
 		}
         
 	}
-
-	public override void takeDamage (int damage)
+    public override string returnName()
+    {
+        return "normal";
+    }
+    public override void takeDamage (int damage)
 	{
         
 		currHealth -= damage;
@@ -128,7 +130,7 @@ public class TempEnemy: Enemy
 	}
 
 	//takes in an array of Collider2D objects and returns an array of GameObjects that have a certain tag
-	private GameObject[] colliderTagSorter (string tagName, Collider2D[] toSort)
+	/*private GameObject[] colliderTagSorter (string tagName, Collider2D[] toSort)
 	{
 		//for ease, use ArrayList to add items to array. Then convert back to array to send back. (MAY CHANGE LATER FOR MEMORY EFFICIENCY)
 		ArrayList tempList = new ArrayList ();
@@ -144,7 +146,7 @@ public class TempEnemy: Enemy
 	{
 		return Physics2D.OverlapCircleAll (center.position, radius);
 	}
-
+    */
 	void OnDrawGizmos ()
 	{
 		Gizmos.color = Color.green;
@@ -165,7 +167,6 @@ public class TempEnemy: Enemy
 		playerData.updateKill ();
 		this.enabled = false;
         num_enemy_alive--;
-        Debug.Log("Subtract one");
 		if (currHealth <= 0)
 			Destroy (gameObject, 0.25f);
 	}
