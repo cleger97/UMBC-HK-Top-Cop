@@ -38,11 +38,16 @@ public class EnemySpawner : MonoBehaviour
         {
             return;
         }
-
         //Only start spawning when there is only 1/3 of enemies left.
-        if (enemyData == null || enemyData.return_num_enemy() <= numToSpawn / 3)
+
+        if (Enemy.return_num_enemy() <= numToSpawn / 3)
+        {
+            //Debug.Log("Num_enemy = " + Enemy.return_num_enemy() + "curr spawn rate = " + numToSpawn);
+
+        if (enemyData == null || Enemy.return_num_enemy() <= numToSpawn / 3)
         {
             // Debug.Log("Num_enemy = " + enemyData.return_num_enemy() + "curr spawn rate = " + numToSpawn);
+
             for (int i = 0; i < numToSpawn; i++)
             {
                 int spawnPointIndex = Random.Range(0, spawnPoints.Length);
