@@ -3,29 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneOneObjective : MonoBehaviour {
+public class SceneTwoObjective : MonoBehaviour {
 
 	public ObjectiveScript objectiveHandler;
-	// Use this for initialization
+
+
 	void Awake () {
-		GameObject objectiveCanvas= GameObject.Find ("Objective Canvas");
+		GameObject objectiveCanvas = GameObject.Find ("Objective Canvas");
+
 		if (objectiveCanvas == null) {
-			Debug.Log ("No Objective Canvas found!");
+			objectiveHandler = null;
+			Debug.LogWarning ("Scene handler did not find Objective Canvas.");
 			SceneManager.LoadScene ("menu", LoadSceneMode.Single);
-		} else {
+		} else { 
 			objectiveHandler = objectiveCanvas.GetComponent<ObjectiveScript> ();
 			if (objectiveHandler == null) {
-				Debug.LogError ("Scene handler did not find Objective Handle.");
+				Debug.LogWarning ("Scene handler did not find Objective Handle.");
 			}
 		}
 	}
 
 	void Start () {
-		objectiveHandler.SetGoalType (0, 1);
+		if (objectiveHandler != null) {
+			objectiveHandler.SetGoalType (1, 60);
+		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 }

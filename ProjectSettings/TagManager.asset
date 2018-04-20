@@ -42,3 +42,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Elevator
+    uniqueID: 3674543725
+    locked: 0

@@ -7,8 +7,10 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
 
-	public static string[] levels = { "menu", "Scene 1", "Victory" };
+	public static string[] levels = { "menu", "Scene 1", "Scene 2", "Victory" };
 	public int currentLevel;
+
+	public static int VictoryLevel = 3;
 
 	private ObjectiveScript objectiveHandle;
 

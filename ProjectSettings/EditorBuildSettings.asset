@@ -8,12 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/menu.unity
     guid: eafc786631748b64ca439a55b6902bef
-  - enabled: 0
-    path: Assets/Scenes/backup/Scene 1 - backup.unity
-    guid: e0d9c7d21e3fbd541b6e3811a6dc44dd
   - enabled: 1
     path: Assets/Scenes/Scene 1.unity
     guid: 3749c45054ec5db48abc99cf32e0e667
+  - enabled: 1
+    path: Assets/Scenes/Scene 2.unity
+    guid: 4c674af6a1bc329429a605cfd4487418
   - enabled: 1
     path: Assets/Scenes/Victory.unity
     guid: 3b98ad4441e1c3e4ea22d564f82504a3
