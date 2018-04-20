@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -8,23 +9,24 @@ public class ObjectiveScript : MonoBehaviour {
 
     public Text goalText;
     public Text progressText;
-    public enum TypeOfGoal { KillCounter, TimeSurvival, Finish };
+    public enum TypeOfGoal { KillCounter, TimeSurvival, Finish, None };
 
 	public MenuUIHandle MenuHandler;
 
 	private LevelManager levelManager;
+
+	private int healthBar = 2;
 
     // initiate to kill counter
     private int currentGoal = (int)TypeOfGoal.KillCounter;
 
     // progress vars
     private int killCount;
-    private int timeSurvived;
+    private float timeLeft;
     private bool didFinish;
 
     // goal vars
     private int killGoal;
-    private int timeToSurvive;
     // finish doesn't really need one (yet)
 
 	private bool isVictory = false;
@@ -51,9 +53,22 @@ public class ObjectiveScript : MonoBehaviour {
 		}
 	}
 
-	// Use this for initialization
-	void Start () {
-		
+	void Update() {
+		// objective UI only needs to update by itself when it's a timed level
+		if (currentGoal != 1) {
+			return;
+		}
+		timeLeft -= Time.deltaTime;
+		if (timeLeft > 0) {
+			int minutes = (int)timeLeft / 60;
+			int seconds = (int)timeLeft % 60;
+
+			progressText.text = "Time Left: " + minutes.ToString("D2") + ":" + seconds.ToString("D2");
+		} else {
+			levelManager.NextLevel ();
+			currentGoal = (int) TypeOfGoal.None;
+		}
+
 	}
 
 	public void ActivateObjects() {
@@ -68,7 +83,7 @@ public class ObjectiveScript : MonoBehaviour {
     {
         currentGoal = type;
         killCount = 0;
-        timeSurvived = 0;
+        timeLeft = 0;
         didFinish = false;
 		isVictory = false;
         switch (type)
@@ -83,9 +98,9 @@ public class ObjectiveScript : MonoBehaviour {
                 }
             case 1:
                 {
-                    timeToSurvive = goal; 
-                    goalText.text = "Goal: Survive for " + goal + " minutes.";
-                    progressText.text = "Time Survived: 0 minutes.";
+					timeLeft = goal;
+					goalText.text = "Goal: Survive for " + (goal/60).ToString("D2") + ":" + (goal%60).ToString("D2");
+                    progressText.text = "Time left: ";
                     break;
                 }
             case 2:
@@ -96,13 +111,21 @@ public class ObjectiveScript : MonoBehaviour {
 	
     public void UpdateKillCount(int howMany)
     {
+
+
         killCount += howMany;
+
+		if (currentGoal != (int)TypeOfGoal.KillCounter) {
+			return;
+		}
+
         progressText.text = "Enemies Killed: " + killCount + " / " + killGoal;
 
 
         if (killCount >= killGoal && !isVictory)
         {
 			levelManager.NextLevel ();
+			currentGoal = (int) TypeOfGoal.None;
             // victory or whatever goes here
             // TODO: implement victory
         }
@@ -113,5 +136,6 @@ public class ObjectiveScript : MonoBehaviour {
 		goalText.text = "Success!";
 		progressText.text = "";
 
+		this.transform.GetChild (healthBar).gameObject.SetActive (false);
 	}
 }
