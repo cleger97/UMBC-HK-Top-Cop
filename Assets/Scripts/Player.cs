@@ -430,6 +430,10 @@ public class Player : MonoBehaviour {
 		isRed = true;
 		timeRed = 1f;
 
+		if (currentHealth > maxHealth) {
+			currentHealth = maxHealth;
+		}
+
 		decimal percent = (decimal)currentHealth / (decimal)maxHealth;
 		healthBar.GetChild(hpbar_health).localScale = new Vector3((float)percent, 1, 1);
 		percent *= 100;

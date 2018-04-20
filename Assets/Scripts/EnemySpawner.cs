@@ -64,5 +64,6 @@ public class EnemySpawner : MonoBehaviour
         else
             repeatRate = checkRate;
         
-    }
+    	}
+	}
 }
