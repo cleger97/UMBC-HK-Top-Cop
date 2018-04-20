@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    
+
     private Player playerData = null;
     public GameObject enemy;
     private Enemy enemyData = null;
@@ -22,12 +22,15 @@ public class EnemySpawner : MonoBehaviour
     void Start()
     {
         playerData = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-		GameObject foundEnemy = GameObject.FindGameObjectWithTag ("Enemy");
-		if (foundEnemy == null) {
-			Debug.LogWarning ("No enemy initalized");
-		} else {
-			enemyData = foundEnemy.GetComponent<Enemy> ();
-		}
+        GameObject foundEnemy = GameObject.FindGameObjectWithTag("Enemy");
+        if (foundEnemy == null)
+        {
+            Debug.LogWarning("No enemy initalized");
+        }
+        else
+        {
+            enemyData = foundEnemy.GetComponent<Enemy>();
+        }
         InvokeRepeating("Spawn", startSpawn, repeatRate);
     }
 
@@ -44,25 +47,27 @@ public class EnemySpawner : MonoBehaviour
         {
             //Debug.Log("Num_enemy = " + Enemy.return_num_enemy() + "curr spawn rate = " + numToSpawn);
 
-        if (enemyData == null || Enemy.return_num_enemy() <= numToSpawn / 3)
-        {
-            // Debug.Log("Num_enemy = " + enemyData.return_num_enemy() + "curr spawn rate = " + numToSpawn);
-
-            for (int i = 0; i < numToSpawn; i++)
+            if (enemyData == null || Enemy.return_num_enemy() <= numToSpawn / 3)
             {
-                int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-                GameObject enemySpawned = Instantiate(enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
-				if (enemyData == null) {
-					enemyData = enemySpawned.GetComponent<Enemy> ();
-				}
+                // Debug.Log("Num_enemy = " + enemyData.return_num_enemy() + "curr spawn rate = " + numToSpawn);
 
-			}
-            numWaves++;
-            numToSpawn++;
-            repeatRate = spawnRate;
+                for (int i = 0; i < numToSpawn; i++)
+                {
+                    int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+                    GameObject enemySpawned = Instantiate(enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+                    if (enemyData == null)
+                    {
+                        enemyData = enemySpawned.GetComponent<Enemy>();
+                    }
+
+                }
+                numWaves++;
+                numToSpawn++;
+                repeatRate = spawnRate;
+            }
+            else
+                repeatRate = checkRate;
+
         }
-        else
-            repeatRate = checkRate;
-        
     }
 }

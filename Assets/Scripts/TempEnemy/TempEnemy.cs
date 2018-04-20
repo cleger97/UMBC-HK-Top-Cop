@@ -27,8 +27,16 @@ public class TempEnemy: Enemy
 	float timeRed;
 	public float TimeDisplayHurt;
 
-	// Use this for initialization
-	void Start ()
+
+    private const float DetLength = 3f;
+    private float left_end_pos;
+    private float right_end_pos;
+    private const float length = 2;
+    private int faceDir;
+    private const int FACE_RIGHT = 1;
+    private const int FACE_LEFT = -1;
+    // Use this for initialization
+    void Start ()
 	{
         num_enemy_alive++;
 		maxHealth = 50f;
@@ -38,7 +46,10 @@ public class TempEnemy: Enemy
 		anim = GetComponent<Animator> ();
 		defColor = GetComponent<SpriteRenderer> ().material.GetColor ("_Color");
 		timeRed = TimeDisplayHurt;
-	}
+
+        left_end_pos = transform.position.x - length; 
+        right_end_pos = transform.position.x + length;
+    }
 
 	// Update is called once per frame
 	void Update ()
@@ -90,17 +101,47 @@ public class TempEnemy: Enemy
 					anim.SetBool ("Attack", false);
 					Vector2 toMove;
                     if (player.GetComponent<Player>().IsPlayerAlive()) {
-                        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= 5) {
+                        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength) {
                             if (player.transform.position.x > transform.position.x) {
+                                faceDir = FACE_RIGHT;
                                 anim.SetInteger("speed", (int)moveSpeed);
                                 toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
 								transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                             } else {
+                                faceDir = FACE_LEFT;
                                 anim.SetInteger("speed", (int)moveSpeed);
 								transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
                                 toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
                             }
                             GetComponent<Rigidbody2D>().velocity = toMove;
+                            left_end_pos = transform.position.x - length;
+                            right_end_pos = transform.position.x + length;
+                        }
+                        else
+                        {
+                            
+                            if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
+                            {
+
+                                anim.SetInteger("speed", 1);
+                                toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
+                                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+                                GetComponent<Rigidbody2D>().velocity = toMove;
+                            }
+                            else
+                            {
+                                faceDir = FACE_RIGHT;
+                                //Jump();
+                            }
+                            if ((faceDir == FACE_RIGHT) && transform.position.x <= right_end_pos)
+                            {
+                                anim.SetInteger("speed", 1);
+                                toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
+                                transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+                                GetComponent<Rigidbody2D>().velocity = toMove;
+                            }
+                            else
+                                faceDir = FACE_LEFT;
                         }
 
                     }
