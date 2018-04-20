@@ -96,10 +96,10 @@ public class TempEnemy: Enemy
                             if (player.transform.position.x > transform.position.x) {
                                 anim.SetInteger("speed", (int)moveSpeed);
                                 toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-                                transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+								transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                             } else {
                                 anim.SetInteger("speed", (int)moveSpeed);
-                                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+								transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
                                 toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
                             }
                             GetComponent<Rigidbody2D>().velocity = toMove;
