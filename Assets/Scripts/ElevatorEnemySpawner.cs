@@ -41,7 +41,13 @@ public class ElevatorEnemySpawner : MonoBehaviour {
 			int spawnPoint = Random.Range (0, spawnPoints.Length);
 			GameObject spawn = Instantiate (enemyPrototype, spawnPoints [spawnPoint].position, Quaternion.identity, enemyContainer);
 
-			spawn.transform.localScale = new Vector3 (2, 2, 2);
+			Setup (spawn);
+
 		}
+	}
+
+	void Setup(GameObject enemyToSet) {
+		enemyToSet.AddComponent (typeof(EnemyFix));
+		enemyToSet.transform.localScale = new Vector3 (2, 2, 2);
 	}
 }

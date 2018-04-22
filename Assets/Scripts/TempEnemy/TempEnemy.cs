@@ -125,7 +125,7 @@ public class TempEnemy: Enemy
 
                                 anim.SetInteger("speed", 1);
                                 toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
-                                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+								transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
                                 GetComponent<Rigidbody2D>().velocity = toMove;
                             }
                             else
@@ -137,7 +137,7 @@ public class TempEnemy: Enemy
                             {
                                 anim.SetInteger("speed", 1);
                                 toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
-                                transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+								transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                                 GetComponent<Rigidbody2D>().velocity = toMove;
                             }
                             else
