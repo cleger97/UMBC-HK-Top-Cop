@@ -32,6 +32,9 @@ public class EnemyFix : MonoBehaviour {
 		if (this.transform.position.y < -3.0) {
 			Physics2D.IgnoreCollision ((Collider2D) collider, (Collider2D) playerCollider, false);
 			normalScript.enabled = true;
+
+			this.GetComponent<Animator> ().enabled = true;
+
 			Destroy (this);
 		}
 	}

@@ -87045,6 +87045,8 @@ MonoBehaviour:
   - {fileID: 1699276552}
   - {fileID: 435726904}
   enemyContainer: {fileID: 1201767949}
+  enemyJump: {fileID: 21300000, guid: 0f37a137f4f358f42ab1538f000a651f, type: 3}
+  enemyNormal: {fileID: 21300000, guid: 12d04f864cdeba549ab9afa95dc82015, type: 3}
 --- !u!4 &1201767949
 Transform:
   m_ObjectHideFlags: 0
