@@ -149,6 +149,58 @@ public class Player : MonoBehaviour {
 
 	}
 
+	// FixedUpdate for jumps
+	// Hopefully stops the superjumping
+	void FixedUpdate() {
+		int horizInput = (int) Input.GetAxisRaw("Horizontal");
+		int vertInput = (int) Input.GetAxisRaw("Vertical");
+
+		if (horizInput != 0) {
+			// can only move if not blocking
+			if (!states.Contains(State.BLOCK) || states.Count == 0) {
+				states.Add (State.MOVE);
+
+			}
+			if (horizInput != faceDirection) {
+				//Debug.Log (horizInput);
+				//Debug.Log (faceDirection);
+				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+				faceDirection = faceDirection * -1;
+			}
+		}
+
+		if (Input.GetButtonDown ("Jump") || Input.GetKeyDown (keybinds.jumpkey) || vertInput > 0) {
+			states.Add (State.JUMP);
+		}
+
+		//Debug.Log (Input.GetButtonDown ("Jump"));
+		//Debug.Log (Input.GetKeyDown (keybinds.jumpkey));
+		//Debug.Log (vertInput);
+
+
+		if (states.Contains (State.JUMP) && isGrounded) {
+			Jump ();
+		}
+
+		if (states.Contains (State.MOVE)) {
+			Move ();
+
+		} else {
+			StopMoving ();
+		}
+
+
+		// checking if player is on the ground
+		bool isGroundedNow = Physics2D.OverlapCircle(groundPoint.position, radius, groundMask);
+		if (isGroundedNow != isGrounded) {
+			this.ResetCollisions (isGroundedNow);
+		}
+		isGrounded = isGroundedNow;
+
+
+
+	}
+
 	// Update is called once per frame
 	void Update () {
 		// Fire off the current states
@@ -171,16 +223,7 @@ public class Player : MonoBehaviour {
 
 		}
 
-		if (states.Contains (State.MOVE)) {
-			Move ();
 
-		} else {
-			StopMoving ();
-		}
-
-		if (states.Contains (State.JUMP) && isGrounded) {
-			Jump ();
-		}
 
 		if (states.Count == 0) { 
 			ResetAnimations ();
@@ -195,8 +238,7 @@ public class Player : MonoBehaviour {
 			}
 		}
 
-		// checking if player is on the ground
-		isGrounded = Physics2D.OverlapCircle(groundPoint.position, radius, groundMask);
+
 		// check in air
 		anim.SetBool("inAir", !isGrounded);
 
@@ -239,7 +281,11 @@ public class Player : MonoBehaviour {
                 currentHealth -= leftTotalDamage;
             else if (faceDirection == -1 && rightTotalDamage > 0)
                 currentHealth -= rightTotalDamage;
-            UpdateHealth();
+
+			if (leftTotalDamage > 0 || rightTotalDamage > 0) {
+				UpdateHealth();
+			}
+            
         }
          
 		leftTotalDamage = 0;
@@ -268,33 +314,12 @@ public class Player : MonoBehaviour {
 			}
 		}
 	
-		int horizInput = (int) Input.GetAxisRaw("Horizontal");
-		int vertInput = (int) Input.GetAxisRaw("Vertical");
 
-		if (horizInput != 0) {
-			// can only move if not blocking
-			if (!states.Contains(State.BLOCK) || states.Count == 0) {
-				states.Add (State.MOVE);
 
-			}
-			if (horizInput != faceDirection) {
-				//Debug.Log (horizInput);
-				//Debug.Log (faceDirection);
-				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-				faceDirection = faceDirection * -1;
-			}
-		}
-
-		if (Input.GetButtonDown ("Jump") || Input.GetKeyDown (keybinds.jumpkey)) {
-			states.Add (State.JUMP);
-		}
 
 	}
 
-	// Do physics work here
-	void FixedUpdate() {
 
-	}
 
 	void Block() {
 		isBlocking = true;
@@ -396,7 +421,10 @@ public class Player : MonoBehaviour {
 
 	void Jump() {
 		anim.SetBool ("idle", false);
-		rb2D.AddForce(new Vector2(0, jumpHeight));
+		if (rb2D.velocity.y == 0) {
+			rb2D.AddForce(new Vector2(0, jumpHeight));
+		}
+
 	}
 
 	void ResetAnimations() {
@@ -405,6 +433,15 @@ public class Player : MonoBehaviour {
 
 		//anim.ResetTrigger ("isPunching");
 		//anim.ResetTrigger ("isPunching2");
+
+	}
+
+	void ResetCollisions(bool currentState) {
+		if (currentState) {
+			Physics2D.IgnoreLayerCollision (9, 10, false);
+		} else {
+			Physics2D.IgnoreLayerCollision (9, 10, true);
+		}
 
 	}
 		

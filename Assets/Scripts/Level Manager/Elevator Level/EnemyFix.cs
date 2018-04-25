@@ -22,15 +22,16 @@ public class EnemyFix : MonoBehaviour {
 
 		collider = this.GetComponent<BoxCollider2D> ();
 		normalScript = this.GetComponent<TempEnemy> ();
-
-		Physics2D.IgnoreCollision ((Collider2D) collider, (Collider2D) playerCollider, true);
+		// Falling enemy - doesn't collide w/ enemy or player
+		this.gameObject.layer = 11;
 		normalScript.enabled = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (this.transform.position.y < -3.0) {
-			Physics2D.IgnoreCollision ((Collider2D) collider, (Collider2D) playerCollider, false);
+			// Not-falling anymore - will collide with player and enemy
+			this.gameObject.layer = 10;
 			normalScript.enabled = true;
 
 			this.GetComponent<Animator> ().enabled = true;

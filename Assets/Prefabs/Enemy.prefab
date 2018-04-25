@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 224782518565902444}
   - component: {fileID: 222258529690336808}
   - component: {fileID: 114138874964507604}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: healthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 223123446814001106}
   - component: {fileID: 114521676361966094}
   - component: {fileID: 114989716651118626}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: EnHealth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 61334026719536994}
   - component: {fileID: 114101396563196240}
   - component: {fileID: 95315050108505226}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4571174760907092}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 224298161968018118}
   - component: {fileID: 222426105438581312}
   - component: {fileID: 114400810244024554}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: background
   m_TagString: Untagged
   m_Icon: {fileID: 0}

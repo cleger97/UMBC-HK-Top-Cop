@@ -11,11 +11,11 @@ public class MenuUIHandle : MonoBehaviour {
     // Attach this class to UI Canvas
     // This way it can access the other children
 
-    GameObject text, button1, button2, button3, gameOver;
+    GameObject text, select, button1, button2, button3, gameOver;
 	string menuSceneName = LevelManager.levels[0];
 	string currSceneName = LevelManager.levels[1];
-	int textNum = 0, button1Num = 2, button2Num = 3, button3Num = 4, gameOverScreen = 1;
-	bool paused = false;
+	int textNum = 0, gameOverScreen = 1, selection = 2, button1Num = 3, button2Num = 4, button3Num = 5;
+	public bool paused = false;
 
 	ObjectiveScript objective;
 
@@ -29,6 +29,7 @@ public class MenuUIHandle : MonoBehaviour {
 		}
 		DontDestroyOnLoad (this);
         text = transform.GetChild(textNum).gameObject;
+		select = transform.GetChild (selection).gameObject;
         button1 = transform.GetChild(button1Num).gameObject;
         button2 = transform.GetChild(button2Num).gameObject;
 		button3 = transform.GetChild(button3Num).gameObject;
@@ -48,6 +49,7 @@ public class MenuUIHandle : MonoBehaviour {
 		button3.transform.GetChild (0).GetComponent<Button> ().onClick.AddListener (ResumeGame);
 
         text.SetActive(false);
+		select.SetActive (false);
         button1.SetActive(false);
         button2.SetActive(false);
 		button3.SetActive(false);
@@ -56,7 +58,7 @@ public class MenuUIHandle : MonoBehaviour {
     }
 
 	void Update() {
-		if (Input.GetKeyDown (KeyCode.Escape)) {
+		if (Input.GetKeyDown (KeyCode.Escape) || Input.GetButtonDown("Menu")) {
 			if (!paused) {
 				Pause ();
 
@@ -77,23 +79,30 @@ public class MenuUIHandle : MonoBehaviour {
         text.SetActive(true);
 		text.GetComponent<Text> ().text = "Paused";
 		text.GetComponent<Text>().color = Color.blue;
-        button1.SetActive(true);
+
+		button1.SetActive(true);
         button2.SetActive(true);
 		button3.SetActive(true);
     
 		paused = true;
+
+		select.SetActive (true);
 
 		Time.timeScale = 0;
 	}
 
 	public void Defeat() {
 		gameOver.SetActive (true);
+
 		objective.Defeat ();
 		text.SetActive(true);
 		text.GetComponent<Text> ().text = "Defeat";
 		text.GetComponent<Text> ().color = Color.red;
 		button1.SetActive(true);
 		button2.SetActive(true);
+		paused = false;
+
+		select.SetActive (true);
 
 	}
 
@@ -102,6 +111,7 @@ public class MenuUIHandle : MonoBehaviour {
 	}
 
 	public void DisableObjects() {
+		select.SetActive (false);
 		gameOver.SetActive (false);
 		button1.SetActive (false);
 		button2.SetActive (false);
