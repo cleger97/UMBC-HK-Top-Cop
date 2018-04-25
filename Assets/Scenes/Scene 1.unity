@@ -2629,6 +2629,7 @@ GameObject:
   - component: {fileID: 1139822355}
   - component: {fileID: 1139822354}
   - component: {fileID: 1139822361}
+  - component: {fileID: 1139822362}
   m_Layer: 0
   m_Name: BigBoss
   m_TagString: Enemy
@@ -2664,9 +2665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f222121fa53a0d40a889405e5ed7254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  regenTimer: 1
   healthBar: {fileID: 0}
-  TimeDisplayHurt: 1
 --- !u!114 &1139822356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2678,10 +2677,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8649606e8feb94645a52bf6b8a5f7fc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpHeight: 400
+  jumpForce: 200
   rb2D: {fileID: 0}
   groundPoint: {fileID: 2027316270}
-  radius: 0.1
   groundMask:
     serializedVersion: 2
     m_Bits: 256
@@ -2804,6 +2802,17 @@ MonoBehaviour:
   attackCircleRadius: 0.5
   dmgArea: {fileID: 1480508859}
   isAttacking: 0
+--- !u!114 &1139822362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1139822353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7aa1ac9924750428da3345c849d6aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1154340556
 GameObject:
   m_ObjectHideFlags: 0
@@ -5160,7 +5169,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2027316269}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.072, y: -0.631, z: 0.21603554}
+  m_LocalPosition: {x: -0.062, y: -0.636, z: 0.21603554}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1139822360}
