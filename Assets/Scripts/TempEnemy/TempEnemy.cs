@@ -107,24 +107,24 @@ public class TempEnemy: Enemy
 					anim.SetBool ("Attack", false);
 					Vector2 toMove;
                     if (player.GetComponent<Player>().IsPlayerAlive()) {
-                        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength) {
+                        //if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength) {
                             if (player.transform.position.x > transform.position.x) {
                                 faceDir = FACE_RIGHT;
                                 anim.SetInteger("speed", (int)moveSpeed);
                                 toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-								transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+							transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                             } else {
                                 faceDir = FACE_LEFT;
                                 anim.SetInteger("speed", (int)moveSpeed);
-								transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+								transform.localScale = new Vector3(1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                                 toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
                             }
                             GetComponent<Rigidbody2D>().velocity = toMove;
                             left_end_pos = transform.position.x - length;
                             right_end_pos = transform.position.x + length;
-                        }
-                        else
-                        {
+                        //}
+                        //else
+                        /*{
                             
                             if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
                             {
@@ -148,7 +148,7 @@ public class TempEnemy: Enemy
                             }
                             else
                                 faceDir = FACE_LEFT;
-                        }
+                        }*/
 
                     }
 				}
