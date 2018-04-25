@@ -21,7 +21,7 @@ public class SceneOneObjective : MonoBehaviour {
 	}
 
 	void Start () {
-		objectiveHandler.SetGoalType (0, 1);
+		objectiveHandler.SetGoalType (0, 10);
 	}
 	
 	// Update is called once per frame

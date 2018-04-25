@@ -10,16 +10,23 @@ public class ReturnToMain : MonoBehaviour {
 
 
 	void Awake() {
-		levelManager = GameObject.Find ("Level Manager").GetComponent<LevelManager> ();
+		levelManager = LevelManager.instance;
 		//button = this.transform.GetChild (0).gameObject;
 
 	}
 	void Start() {
 		button.GetComponent<Button> ().onClick.AddListener (Load);
+		Debug.Log (button);
 	}
 
 	// Update is called once per frame
-	void Load() {
-		levelManager.UpdateLevel (0);
+	public void Load() {
+		levelManager.LoadSpecificLevel (0);
+	}
+
+	void Update() {
+		if (Input.GetButtonDown ("Fire1") || Input.GetButtonDown ("Submit") || Input.GetButtonDown("Menu")) {
+			Load ();
+		}
 	}
 }

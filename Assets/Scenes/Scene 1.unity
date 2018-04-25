@@ -2230,6 +2230,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ab0fcdb77c14a547adc407cd6ed3d21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currSceneName: 
+  paused: 0
 --- !u!1 &972866341
 GameObject:
   m_ObjectHideFlags: 0
@@ -2631,7 +2633,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!95 &1139822354
 Animator:
   serializedVersion: 3
@@ -2678,6 +2680,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  objectDectector: {fileID: 0}
 --- !u!50 &1139822357
 Rigidbody2D:
   serializedVersion: 4

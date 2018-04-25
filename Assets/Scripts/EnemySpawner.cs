@@ -43,8 +43,8 @@ public class EnemySpawner : MonoBehaviour
         }
         //Only start spawning when there is only 1/3 of enemies left.
 
-        if (Enemy.return_num_enemy() <= numToSpawn / 3)
-        {
+        //if (Enemy.return_num_enemy() <= numToSpawn / 3)
+        //{
             //Debug.Log("Num_enemy = " + Enemy.return_num_enemy() + "curr spawn rate = " + numToSpawn);
 
             if (enemyData == null || Enemy.return_num_enemy() <= numToSpawn / 3)
@@ -68,6 +68,6 @@ public class EnemySpawner : MonoBehaviour
             else
                 repeatRate = checkRate;
 
-        }
+        //}
     }
 }

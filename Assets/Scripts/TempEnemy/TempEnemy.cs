@@ -74,10 +74,10 @@ public class TempEnemy: Enemy
 			if (timer > 0)
 				timer -= Time.deltaTime;
 
-			GameObject[] check = Enemy.colliderTagSorter ("Player", Enemy.getAllAround (detectionCircleRadius, transform));
+			GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (detectionCircleRadius, transform));
 			if (check.Length > 0) {
 				GameObject player = check [0];
-				GameObject[] checkInAttack = Enemy.colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
+				GameObject[] checkInAttack = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
 				if (player.GetComponent<Player> ().IsPlayerAlive () == false) {
 					endGame ();
 				}
@@ -91,7 +91,7 @@ public class TempEnemy: Enemy
 						while (timer2 > 0) {
 							timer2 -= Time.deltaTime;
 						}
-						checkInAttack = Enemy.colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
+						checkInAttack = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
 						if (checkInAttack.Length > 0) {
 							float distance = player.transform.position.x - this.transform.position.x;
 							int direction = (int) Mathf.Sign (distance);

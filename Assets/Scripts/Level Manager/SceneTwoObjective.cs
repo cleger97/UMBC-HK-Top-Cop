@@ -25,7 +25,7 @@ public class SceneTwoObjective : MonoBehaviour {
 
 	void Start () {
 		if (objectiveHandler != null) {
-			objectiveHandler.SetGoalType (1, 60);
+			objectiveHandler.SetGoalType (1, 90);
 		}
 	}
 

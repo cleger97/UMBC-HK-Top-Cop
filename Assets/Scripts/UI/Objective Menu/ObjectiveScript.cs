@@ -7,13 +7,15 @@ using UnityEngine.SceneManagement;
 
 public class ObjectiveScript : MonoBehaviour {
 
+	public static ObjectiveScript instance = null;
+
     public Text goalText;
     public Text progressText;
     public enum TypeOfGoal { KillCounter, TimeSurvival, Finish, None };
 
-	public MenuUIHandle MenuHandler;
+	MenuUIHandle MenuHandler;
 
-	private LevelManager levelManager;
+	LevelManager levelManager;
 
 	private int healthBar = 2;
 
@@ -36,13 +38,15 @@ public class ObjectiveScript : MonoBehaviour {
 
 	void Awake() {
 		// If a level manager and objective script already exist destroy this new one
-		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 3) {
-			Destroy (this.gameObject);
+		if (instance == null) {
+			instance = this;
+		} else if (instance != this) {
+			Destroy (gameObject);
 		}
 		// Otherwise, Objective Script shouldn't be destroyed on load.
 		DontDestroyOnLoad (this);
 
-		levelManager = GameObject.Find ("Level Manager").GetComponent<LevelManager> ();
+
 
 		if (SceneManager.GetActiveScene () == SceneManager.GetSceneByName (LevelManager.levels [0])) {
 			foreach (Transform objects in transform) {
@@ -51,6 +55,11 @@ public class ObjectiveScript : MonoBehaviour {
 			}
 			UIShow = false;
 		}
+	}
+
+	void Start() {
+		levelManager = LevelManager.instance;
+		MenuHandler = MenuUIHandle.instance;
 	}
 
 	void Update() {
@@ -141,6 +150,8 @@ public class ObjectiveScript : MonoBehaviour {
 		isVictory = true;
 		goalText.text = "Success!";
 		progressText.text = "";
+
+		UIShow = false;
 
 		goalText.gameObject.transform.parent.gameObject.SetActive (false);
 		progressText.gameObject.transform.parent.gameObject.SetActive (false);

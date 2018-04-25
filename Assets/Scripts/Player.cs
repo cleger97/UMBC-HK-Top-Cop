@@ -95,11 +95,7 @@ public class Player : MonoBehaviour {
 	// Assign core objects in Awake()
 	void Awake() {
 		// objective stuff
-		if (GameObject.Find ("Objective Canvas") != null) {
-			objectiveHandle = GameObject.Find ("Objective Canvas").GetComponent<ObjectiveScript> ();
-		} else {
-			objectiveHandle = null;
-		}
+		objectiveHandle = ObjectiveScript.instance;
 
 
 		if (objectiveHandle != null) {
@@ -152,6 +148,31 @@ public class Player : MonoBehaviour {
 	// FixedUpdate for jumps
 	// Hopefully stops the superjumping
 	void FixedUpdate() {
+
+		// Fire off the current states
+		if (states.Contains (State.BLOCK)) {
+			Block ();
+		} else {
+			Unblock ();
+		}
+
+		if (states.Contains (State.ATTACK)) {
+			// the principle of combos come from canceling backswing - if the player attacks at this time, they should be able to hit again.
+			float minAttackTime = 20 * AVG_FRAME_TIME;
+			float baseAttackCooldown = 30 * AVG_FRAME_TIME;
+			//Debug.Log ( (int) (attackCD / AVG_FRAME_TIME));
+			if (attackCD <= minAttackTime) {
+				//Debug.Log (currentHits);
+				Attack ();
+				attackCD = baseAttackCooldown;
+			}
+
+		}
+
+		if (states.Count == 0) { 
+			ResetAnimations ();
+		}
+
 		int horizInput = (int) Input.GetAxisRaw("Horizontal");
 		int vertInput = (int) Input.GetAxisRaw("Vertical");
 
@@ -173,11 +194,6 @@ public class Player : MonoBehaviour {
 			states.Add (State.JUMP);
 		}
 
-		//Debug.Log (Input.GetButtonDown ("Jump"));
-		//Debug.Log (Input.GetKeyDown (keybinds.jumpkey));
-		//Debug.Log (vertInput);
-
-
 		if (states.Contains (State.JUMP) && isGrounded) {
 			Jump ();
 		}
@@ -189,45 +205,12 @@ public class Player : MonoBehaviour {
 			StopMoving ();
 		}
 
-
 		// checking if player is on the ground
 		bool isGroundedNow = Physics2D.OverlapCircle(groundPoint.position, radius, groundMask);
 		if (isGroundedNow != isGrounded) {
 			this.ResetCollisions (isGroundedNow);
 		}
 		isGrounded = isGroundedNow;
-
-
-
-	}
-
-	// Update is called once per frame
-	void Update () {
-		// Fire off the current states
-		if (states.Contains (State.BLOCK)) {
-			Block ();
-		} else {
-			Unblock ();
-		}
-
-		if (states.Contains (State.ATTACK)) {
-			// the principle of combos come from canceling backswing - if the player attacks at this time, they should be able to hit again.
-			float minAttackTime = 20 * AVG_FRAME_TIME;
-			float baseAttackCooldown = 30 * AVG_FRAME_TIME;
-			//Debug.Log ( (int) (attackCD / AVG_FRAME_TIME));
-			if (attackCD <= minAttackTime) {
-				//Debug.Log (currentHits);
-				Attack ();
-				attackCD = baseAttackCooldown;
-			}
-
-		}
-
-
-
-		if (states.Count == 0) { 
-			ResetAnimations ();
-		}
 
 		if (attackCD > 0) {
 			//Debug.Log (attackCD);
@@ -237,11 +220,9 @@ public class Player : MonoBehaviour {
 				currentHits = 0;
 			}
 		}
-
-
+			
 		// check in air
 		anim.SetBool("inAir", !isGrounded);
-
 
 		// Update the renderer
 		if (isRed) {
@@ -266,32 +247,32 @@ public class Player : MonoBehaviour {
 		for (int i = 0; i < leftDamageList.Count; i++) {
 			leftTotalDamage += leftDamageList [i];
 		}
-        for (int i = 0; i < rightDamageList.Count; i++)
-        {
-            rightTotalDamage += rightDamageList[i];
-        }
+		for (int i = 0; i < rightDamageList.Count; i++)
+		{
+			rightTotalDamage += rightDamageList[i];
+		}
 
-        if (!isBlocking && (leftTotalDamage > 0|| rightTotalDamage > 0)) {
-            int totalDamage = leftTotalDamage + rightTotalDamage;
+		if (!isBlocking && (leftTotalDamage > 0|| rightTotalDamage > 0)) {
+			int totalDamage = leftTotalDamage + rightTotalDamage;
 			currentHealth -= totalDamage;
 			UpdateHealth ();
 		}
-        else if (isBlocking){
-            if (faceDirection == 1 && leftTotalDamage > 0)
-                currentHealth -= leftTotalDamage;
-            else if (faceDirection == -1 && rightTotalDamage > 0)
-                currentHealth -= rightTotalDamage;
+		else if (isBlocking){
+			if (faceDirection == 1 && leftTotalDamage > 0)
+				currentHealth -= leftTotalDamage;
+			else if (faceDirection == -1 && rightTotalDamage > 0)
+				currentHealth -= rightTotalDamage;
 
 			if (leftTotalDamage > 0 || rightTotalDamage > 0) {
 				UpdateHealth();
 			}
-            
-        }
-         
+
+		}
+
 		leftTotalDamage = 0;
-        rightTotalDamage = 0;
-        leftDamageList.Clear ();
-        rightDamageList.Clear();	
+		rightTotalDamage = 0;
+		leftDamageList.Clear ();
+		rightDamageList.Clear();	
 		// Clear the input list
 		alreadyInput = false;
 		states.Clear ();
@@ -313,6 +294,13 @@ public class Player : MonoBehaviour {
 				states.Add (State.ATTACK);
 			}
 		}
+
+
+	}
+
+	// Update is called once per frame
+	void Update () {
+		
 	
 
 

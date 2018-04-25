@@ -6,26 +6,32 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
+	
+	public static LevelManager instance = null;
 
 	public static string[] levels = { "menu", "Scene 1", "Scene 2", "Victory" };
-	public int currentLevel;
+	public int currentLevel = 0;
 
 	public static int VictoryLevel = 3;
 
-	private ObjectiveScript objectiveHandle;
+
+	ObjectiveScript objectiveHandle;
 
 	// Use this for initialization
 	void Awake () {
 		// If a level manager and objective script already exist destroy this new one
-		if (GameObject.FindGameObjectsWithTag ("GameController").Length > 3) {
-			Destroy (this.gameObject);
+		if (instance == null) {
+			instance = this;
+		} else if (instance != this) {
+			Destroy (gameObject);
 		}
 		// Otherwise, Level Managers shouldn't be destroyed on load.
 		DontDestroyOnLoad(this);
 
-		objectiveHandle = GameObject.Find ("Objective Canvas").GetComponent<ObjectiveScript>();
-		// Start at level zero - menu level
-		currentLevel = 0;
+	}
+
+	void Start() {
+		objectiveHandle = ObjectiveScript.instance;
 	}
 
 	// Level Manager shouldn't need to update
@@ -33,6 +39,14 @@ public class LevelManager : MonoBehaviour {
 
 	// use this when manually changing level
 	public void UpdateLevel(int level) {
+		if (currentLevel == 0 && level != 0) {
+			if (MenuUIHandle.instance == null) {
+				Debug.LogError ("Menu UI handle not initalized!");
+				return;
+			} else {
+				MenuUIHandle.instance.StartGame ();
+			}
+		}
 		currentLevel = level;
 		if (objectiveHandle.UIShow == false && currentLevel != 0) {
 			objectiveHandle.ActivateObjects ();
@@ -56,6 +70,9 @@ public class LevelManager : MonoBehaviour {
 	public void LoadSpecificLevel(int level) {
 		currentLevel = level;
 		SceneManager.LoadScene (levels [level], LoadSceneMode.Single);
+		if (objectiveHandle.UIShow == false && currentLevel != 0) {
+			objectiveHandle.ActivateObjects ();
+		}
 	}
 
 	public void LoadSpecificLevel(string level) {

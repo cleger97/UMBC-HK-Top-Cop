@@ -41,7 +41,7 @@ public class UISelection : MonoBehaviour {
 
 
 
-		Debug.Log (isPause);
+		//Debug.Log (isPause);
 
 		if (Input.GetButtonDown ("Fire1") || Input.GetKeyDown (KeyCode.Return) || Input.GetButtonDown("Submit")) {
 			switch (selectLocation) {
@@ -53,6 +53,9 @@ public class UISelection : MonoBehaviour {
 				break;
 			case 2:
 				UIHandle.ResumeGame ();
+				break;
+			default:
+				Debug.LogWarning ("Defaulted");
 				break;
 			}
 		}
