@@ -12,8 +12,8 @@ public class Boss_attack : MonoBehaviour {
 
     public float detectionCircleRadius;
     public float attackCircleRadius;
-    public float attkCoolDown;
-    public int damage;
+    private float attkCoolDown;
+    private int damage;
     public Transform dmgArea;
 
     public bool isAttacking;
@@ -25,7 +25,8 @@ public class Boss_attack : MonoBehaviour {
         anim = GetComponent<Animator>();
         timer = 0f;
         isAttacking = false;
-
+        damage = 20;
+        attkCoolDown = 1f;
     }
 	
 	// Update is called once per frame
@@ -36,23 +37,21 @@ public class Boss_attack : MonoBehaviour {
             this.enabled = false;
             return;
         }
+        isAttacking = false;
 
+        anim.SetBool("isAttack", false);
         if (timer > 0)
             timer -= Time.deltaTime;
-        else
-        {
-            
-            attackCheck();
-            timer = attkCoolDown;
-        }
+   
+        attackCheck();
+       
         
     }
 
     public void attackCheck()
     {
 
-        anim.SetBool("Attack", false);
-        isAttacking = false;
+        
         GameObject[] check = Enemy.colliderTagSorter("Player", Enemy.getAllAround(detectionCircleRadius, transform));
         if (check.Length > 0)
         {
@@ -65,44 +64,53 @@ public class Boss_attack : MonoBehaviour {
             }*/
             if (checkInAttack.Length > 0)
             {
+                anim.SetBool("isAttack", true);
                 //anim.SetBool("InArea", false);
                 if (timer <= 0)
                 {
+                    
+                    anim.SetBool("isAttack", true);
                     //anim.SetTrigger("Attack");
                     isAttacking = true;
-                    anim.SetBool("Attack", true);
+                    Debug.Log(isAttacking);
+                    Debug.Log("In here");
                     float timer2 = 3f;
                     //this is temporary. It will pause the damage dealt until Tobinator actually hits in the animation
                     while (timer2 > 0)
                     {
                         timer2 -= Time.deltaTime;
+                    
                     }
+
                     checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
                     if (checkInAttack.Length > 0)
                     {
-                        isAttacking = true;
+                        
                         float distance = player.transform.position.x - this.transform.position.x;
                         int direction = (int)Mathf.Sign(distance);
                         //Debug.Log("Direction = " + direction);
                         // direction will be 1 for player on right side and -1 for player
                         // on left side
                         player.GetComponent<Player>().GetHit(damage, direction);
+                        
                     }
-                    
+                    timer = attkCoolDown;
+                    anim.SetBool("isAttack", false);
                 }
             }
             else
             {
                 //anim.SetBool("InArea", true);
-                anim.SetBool("Attack", false);
-                isAttacking = false;
+                anim.SetBool("isAttack", false);
+                
             }
-            
+            isAttacking = false;
         }
         else
         {
             isAttacking = false;
-            anim.SetBool("InArea", false);
+            //anim.SetBool("InArea", false);
+            //anim.SetBool("isAttack", false);
         }
     }
 }

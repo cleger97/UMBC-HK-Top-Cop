@@ -35,6 +35,11 @@ public class TempEnemy: Enemy
     private int faceDir;
     private const int FACE_RIGHT = 1;
     private const int FACE_LEFT = -1;
+
+    public Transform groundPoint;
+    public float radius = 0.1f;
+    public LayerMask groundMask;
+    private bool isGrounded;
     // Use this for initialization
     void Start ()
 	{
@@ -54,8 +59,9 @@ public class TempEnemy: Enemy
 	// Update is called once per frame
 	void Update ()
 	{
+        //isGrounded = Physics2D.OverlapCircle(groundPoint.position, radius, groundMask);
         //Debug.Log("Current num of enemy:" + num_enemy_alive);
-		if (timeRed > 0) {
+        if (timeRed > 0) {
 			timeRed -= Time.deltaTime;
 		} else
 			GetComponent<SpriteRenderer> ().material.SetColor ("_Color", defColor);

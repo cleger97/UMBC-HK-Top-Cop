@@ -13,10 +13,17 @@ public class Enemy_Movement : MonoBehaviour
     Player playerData;
     Animator anim;
     private float moveSpeed = 2;
-    private float move_left;
-    private float move_right;
-    private int faceDir = -1; //-1 = left, 1 = right
+  
+    private float left_end_pos;
+    private float right_end_pos;
+    private int faceDir; //-1 = left, 1 = right
+    private const int FACE_RIGHT = 1;
+    private const int FACE_LEFT = -1;
+    private const int length = 2;
+    private const int slow_moveSpeed = 1;
+
     private bool isRunAway;
+
     public Transform groundPoint;
     public float radius =  0.1f;
     public LayerMask groundMask;
@@ -27,8 +34,8 @@ public class Enemy_Movement : MonoBehaviour
         playerData = player.GetComponent<Player>();
         data = GetComponent<Boss_Data>();
         anim = GetComponent<Animator>();
-        move_right = transform.position.x + 2;
-        move_left = transform.position.x - 2;
+        right_end_pos = transform.position.x + length;
+        left_end_pos = transform.position.x - length;
         attackData = GetComponent<Boss_attack>();
         rb2D = GetComponent<Rigidbody2D>();
         isRunAway = false;
@@ -65,49 +72,51 @@ public class Enemy_Movement : MonoBehaviour
                 {
                     if (player.transform.position.x > transform.position.x)
                     {
+                        faceDir = FACE_RIGHT;
                         anim.SetInteger("speed", (int)moveSpeed);
                         toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
                         transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
                     }
                     else
                     {
+                        faceDir = FACE_LEFT;
                         anim.SetInteger("speed", (int)moveSpeed);
                         transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
                         toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
                     }
                     GetComponent<Rigidbody2D>().velocity = toMove;
-                    move_right = transform.position.x + 1;
-                    move_left = transform.position.x - 1;
+                    right_end_pos = transform.position.x + length;
+                    left_end_pos = transform.position.x - length;
                 }
                 else
-                    anim.SetInteger("speed", (int)1);
+                    anim.SetInteger("speed", slow_moveSpeed);
             }
             else
             {
                
                 Vector2 toMove;
-                if ((faceDir == -1) && transform.position.x >= move_left)
+                if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
                 {
 
-                    anim.SetInteger("speed", 1);
+                    anim.SetInteger("speed", slow_moveSpeed);
                     toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
                     transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
                     GetComponent<Rigidbody2D>().velocity = toMove;
                 }
                 else
                 {
-                    faceDir = 1;
+                    faceDir = FACE_RIGHT;
                     //Jump();
                 }
-                if ((faceDir == 1) && transform.position.x <= move_right)
+                if ((faceDir == FACE_RIGHT) && transform.position.x <= right_end_pos)
                 {
-                    anim.SetInteger("speed", 1);
+                    anim.SetInteger("speed", slow_moveSpeed);
                     toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
                     transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
                     GetComponent<Rigidbody2D>().velocity = toMove;
                 }
                 else
-                    faceDir = -1;
+                    faceDir = FACE_LEFT;
 
             }
         }

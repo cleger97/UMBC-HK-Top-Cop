@@ -21,7 +21,7 @@ public class Boss_Data : Enemy {
     }
     // Use this for initialization
     void Start () {
-        max_health = 200;
+        max_health = 400;
         currHealth = max_health;
         timeRed = TimeDisplayHurt;
         defColor = GetComponent<SpriteRenderer>().material.GetColor("_Color");
@@ -57,7 +57,7 @@ public class Boss_Data : Enemy {
         underAttack = true;
 
         timeRed = TimeDisplayHurt;
-        SetHealthBar(currHealth);
+        //SetHealthBar(currHealth);
         GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.red);
         if (currHealth <= 0)
             dead();
@@ -99,7 +99,7 @@ public class Boss_Data : Enemy {
         {
             currHealth += 0.02f * max_health;
             regenTimer = 1.0f;
-            SetHealthBar(currHealth);
+            //SetHealthBar(currHealth);
             if (currHealth >= 0.7f * max_health)
                 lowHealth = false;
             mov.setRunAway(lowHealth);
