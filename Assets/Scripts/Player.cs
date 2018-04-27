@@ -72,9 +72,11 @@ public class Player : MonoBehaviour {
 
 	// player data
 	public int maxHealth;
-	public int currentHealth;
+	public float currentHealth;
 	public float invulTime;
 	public float currInvulTime = 0;
+
+	private float healthRegen = 2.5f;
 
 	public Transform healthBar;
 	public Text hpbar_text;
@@ -491,11 +493,9 @@ public class Player : MonoBehaviour {
 		if (objectiveHandle != null) {
 			objectiveHandle.UpdateKillCount(1);
 		}
-
-
 		// post-kill things here
 		// i.e. partial heal 
-		currentHealth += 25;
+		currentHealth += healthRegen;
 
 		UpdateHealth ();
 	}

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ElevatorEnemySpawner : MonoBehaviour {
 
+
+	private ObjectiveScript objective;
 	private Player playerData;
 	public GameObject enemyPrototype;
 
@@ -17,7 +19,9 @@ public class ElevatorEnemySpawner : MonoBehaviour {
 	private const float checkRate = 0.5f;
 	private const float spawnRate = 2f;
 
-	private const float maxEnemies = 2;
+	private const float maxEnemies = 3;
+
+	private float spawnTimer;
 	// Use this for initialization
 	void Start () {
 		GameObject playerCharacter = GameObject.Find ("Player");
@@ -30,10 +34,31 @@ public class ElevatorEnemySpawner : MonoBehaviour {
 				Debug.LogWarning ("Player script does not exist in scene!");
 			}
 		}
+
+		objective = ObjectiveScript.instance;
+
 		// start spawns 5 seconds in and continue every 2 seconds
-		InvokeRepeating ("Spawn", 5f, spawnRate);
+		spawnTimer = 2f;
 	}
-	
+
+	void Update() {
+		if (spawnTimer > 0) {
+			spawnTimer -= Time.deltaTime;
+			if (spawnTimer < 0) {
+				spawnTimer = 0;
+			}
+			return;
+		}
+
+		Spawn ();
+
+		if (objective != null) {
+			spawnTimer = spawnRate * objective.GetPercentRemaining ();
+		} else {
+			spawnTimer = spawnRate;
+		}
+	}
+
 	// Update is called once per frame
 	void Spawn() {
 		if (playerData == null || playerData.IsPlayerAlive () == false) {

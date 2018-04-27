@@ -29,6 +29,7 @@ public class ObjectiveScript : MonoBehaviour {
 
     // goal vars
     private int killGoal;
+	private int timeGoal;
     // finish doesn't really need one (yet)
 
 	private bool isVictory = false;
@@ -88,6 +89,18 @@ public class ObjectiveScript : MonoBehaviour {
 
 	}
 
+	public float GetPercentRemaining() {
+		switch (currentGoal) {
+		case 0:
+			return 1f - (killCount / killGoal);
+		case 1:
+			return (timeLeft / timeGoal);
+		// case 2 and 3: default
+		default:
+			return 0f;
+		}
+	}
+
     public void SetGoalType(int type, int goal)
     {
         currentGoal = type;
@@ -99,6 +112,7 @@ public class ObjectiveScript : MonoBehaviour {
         {
             case 0:
                 {
+					killCount = 0;
                     killGoal = goal;
                     goalText.text = "Goal: Kill " + killGoal + " enemies.";
                     progressText.text = "Enemies killed: 0 / " + killGoal;
@@ -107,6 +121,7 @@ public class ObjectiveScript : MonoBehaviour {
                 }
             case 1:
                 {
+					timeGoal = goal;
 					timeLeft = goal;
 					goalText.text = "Goal: Survive for " + (goal/60).ToString("D2") + ":" + (goal%60).ToString("D2");
                     progressText.text = "Time left: ";

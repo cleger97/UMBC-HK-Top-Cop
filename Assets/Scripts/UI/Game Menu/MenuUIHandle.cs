@@ -71,7 +71,11 @@ public class MenuUIHandle : MonoBehaviour {
 
 	}
 
-	public void StartGame() {
+	public void EnableControls() {
+		controls.SetActive (true);
+	}
+
+	public void DisableControls() {
 		controls.SetActive (false);
 	}
 

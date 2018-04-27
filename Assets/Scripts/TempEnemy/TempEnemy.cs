@@ -14,8 +14,8 @@ public class TempEnemy: Enemy
 	public float moveSpeed;
 	public float attkCoolDown;
 
-	public float detectionCircleRadius;
-	public float attackCircleRadius;
+	public float detectionCircleRadius = 500f;
+	public float attackCircleRadius = 0.5f;
 
 	public Transform dmgArea;
 	GameObject player;
@@ -73,6 +73,7 @@ public class TempEnemy: Enemy
              
 			if (timer > 0)
 				timer -= Time.deltaTime;
+				return;
 
 			GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (detectionCircleRadius, transform));
 			if (check.Length > 0) {
@@ -84,13 +85,12 @@ public class TempEnemy: Enemy
 				if (checkInAttack.Length > 0) {
 					//anim.SetBool("InArea", false);
 					if (timer <= 0) {
-						//anim.SetTrigger("Attack");
+						// anim.SetTrigger("Attack");
 						anim.SetBool ("Attack", true);
-						float timer2 = 3f;
-						//this is temporary. It will pause the damage dealt until Tobinator actually hits in the animation
-						while (timer2 > 0) {
-							timer2 -= Time.deltaTime;
-						}
+						float timer2 = 2f;
+						// timer machine broke
+
+
 						checkInAttack = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
 						if (checkInAttack.Length > 0) {
 							float distance = player.transform.position.x - this.transform.position.x;
@@ -116,7 +116,7 @@ public class TempEnemy: Enemy
                             } else {
                                 faceDir = FACE_LEFT;
                                 anim.SetInteger("speed", (int)moveSpeed);
-								transform.localScale = new Vector3(1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+								transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                                 toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
                             }
                             GetComponent<Rigidbody2D>().velocity = toMove;
@@ -169,6 +169,9 @@ public class TempEnemy: Enemy
 		GetComponent<SpriteRenderer> ().material.SetColor ("_Color", Color.red);
 		SetHealthBar (currHealth);
 		timeRed = TimeDisplayHurt;
+
+		// Apply hitstun
+		timer = (timer > 1f) ? timer : 1f;
 	}
 
 	IEnumerator deathSequence ()

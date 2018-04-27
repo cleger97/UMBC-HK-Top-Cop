@@ -39,13 +39,10 @@ public class LevelManager : MonoBehaviour {
 
 	// use this when manually changing level
 	public void UpdateLevel(int level) {
-		if (currentLevel == 0 && level != 0) {
-			if (MenuUIHandle.instance == null) {
-				Debug.LogError ("Menu UI handle not initalized!");
-				return;
-			} else {
-				MenuUIHandle.instance.StartGame ();
-			}
+		if (level != 0) {
+			MenuUIHandle.instance.DisableControls ();
+		} else {
+			MenuUIHandle.instance.EnableControls ();
 		}
 		currentLevel = level;
 		if (objectiveHandle.UIShow == false && currentLevel != 0) {
@@ -70,6 +67,9 @@ public class LevelManager : MonoBehaviour {
 	public void LoadSpecificLevel(int level) {
 		currentLevel = level;
 		SceneManager.LoadScene (levels [level], LoadSceneMode.Single);
+		if (MenuUIHandle.instance != null && level == 0) {
+			MenuUIHandle.instance.EnableControls ();
+		}
 		if (objectiveHandle.UIShow == false && currentLevel != 0) {
 			objectiveHandle.ActivateObjects ();
 		}
