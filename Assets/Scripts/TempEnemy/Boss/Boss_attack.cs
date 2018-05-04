@@ -60,10 +60,10 @@ public class Boss_attack : MonoBehaviour {
     {
 
 
-            anim.SetBool("isAttack", true);
+            //anim.SetBool("isAttack", true);
             isAttacking = true;
             Debug.Log(isAttacking);
-            float timer2 = 3f;
+            float timer2 = 30f;
             //this is temporary. It will pause the damage dealt until Tobinator actually hits in the animation
             while (timer2 > 0)
             {
@@ -82,6 +82,7 @@ public class Boss_attack : MonoBehaviour {
                 player.GetComponent<Player>().GetHit(damage, direction);
 
             }
+
            
            
     }

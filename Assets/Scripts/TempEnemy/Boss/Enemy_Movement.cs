@@ -10,7 +10,11 @@ public class Enemy_Movement : MonoBehaviour
     GameObject player;
 
     Animator anim;
-    private float moveSpeed = 2;
+
+    private float currSpeed;
+    private const float CHASE_SPEED = 3;
+    private const int SLOW_SPEED = 1;
+
 
     private float left_end_pos;
     private float right_end_pos;
@@ -18,7 +22,8 @@ public class Enemy_Movement : MonoBehaviour
     private const int FACE_RIGHT = 1;
     private const int FACE_LEFT = -1;
     private const int length = 2;
-    private const int slow_moveSpeed = 1;
+    private const float detectLength = 4;
+    
 
     private bool isRunAway;
     private float detectionCircleRadius = 100;
@@ -50,7 +55,8 @@ public class Enemy_Movement : MonoBehaviour
     {
         isJumping = false;
         grounded = isGrounded();
-
+        if (!grounded)
+            currSpeed = 1;
 
         if (randomJumpTimer > 0)
             randomJumpTimer -= Time.deltaTime;
@@ -65,20 +71,22 @@ public class Enemy_Movement : MonoBehaviour
 
     public void runAway()
     {
+        if (!grounded)
+            currSpeed = 1;
         Debug.Log("In runAway here");
         Vector2 toMove;
         if (player.transform.position.x < transform.position.x)
         {
-            anim.SetInteger("speed", (int)(moveSpeed + 3));
-            toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+            anim.SetInteger("speed", (int)(currSpeed));
+            toMove = new Vector2(currSpeed, GetComponent<Rigidbody2D>().velocity.y);
             transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
             faceDir = FACE_LEFT;
         }
         else
         {
-            anim.SetInteger("speed", (int)(moveSpeed + 3));
+            anim.SetInteger("speed", (int)(currSpeed + 3));
             transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
-            toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+            toMove = new Vector2(-currSpeed, GetComponent<Rigidbody2D>().velocity.y);
             faceDir = FACE_RIGHT;
         }
         GetComponent<Rigidbody2D>().velocity = toMove;
@@ -94,38 +102,48 @@ public class Enemy_Movement : MonoBehaviour
 
     public void handleMovement()
     {
-     
+
         if (!isRunAway)
+        {
+            currSpeed = CHASE_SPEED;
             chasingPlayer();
+        }
         else
+        {
+            currSpeed = CHASE_SPEED + 1;
             runAway();
+        }
     }
 
     private void chasingPlayer()
     {
-        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= 3)
+        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= detectLength)
         {
             Vector2 toMove;
             if (player.transform.position.x > transform.position.x)
             {
                 faceDir = FACE_RIGHT;
-                anim.SetInteger("speed", (int)moveSpeed);
-                toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                anim.SetInteger("speed", (int)currSpeed);
+                toMove = new Vector2(currSpeed, GetComponent<Rigidbody2D>().velocity.y);
                 transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
             }
             else
             {
                 faceDir = FACE_LEFT;
-                anim.SetInteger("speed", (int)moveSpeed);
+                anim.SetInteger("speed", (int)currSpeed);
                 transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
-                toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-             }
+                toMove = new Vector2(-currSpeed, GetComponent<Rigidbody2D>().velocity.y);
+            }
             GetComponent<Rigidbody2D>().velocity = toMove;
             right_end_pos = transform.position.x + length;
             left_end_pos = transform.position.x - length;
-           
+
         }
-        idleTime();
+        else
+        {
+            currSpeed = SLOW_SPEED;
+            idleTime();
+        }
         detectObject();
     }
 
@@ -141,7 +159,7 @@ public class Enemy_Movement : MonoBehaviour
             if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
             {
 
-                anim.SetInteger("speed", slow_moveSpeed);
+                anim.SetInteger("speed", (int)currSpeed);
                 toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
                 transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
                 GetComponent<Rigidbody2D>().velocity = toMove;
@@ -153,7 +171,7 @@ public class Enemy_Movement : MonoBehaviour
             }
             if ((faceDir == FACE_RIGHT) && transform.position.x <= right_end_pos)
             {
-                anim.SetInteger("speed", slow_moveSpeed);
+                anim.SetInteger("speed", (int)currSpeed);
                 toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
                 transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
                 GetComponent<Rigidbody2D>().velocity = toMove;
@@ -179,13 +197,14 @@ public class Enemy_Movement : MonoBehaviour
 
     private void jump()
     {
+        
         isJumping = true;
         if (grounded && isJumping)
         {
             grounded = false;
             rb2D.AddForce(new Vector2(0, jumpForce));
         }
-        isJumping = false;
+        //isJumping = false;
     }
 
     private void detectObject()
@@ -204,9 +223,9 @@ public class Enemy_Movement : MonoBehaviour
                 }
                 else
                 {
-                    jumpForce = 400;
+                    currSpeed = 0;
                     jump();
-                    jumpForce = 200;
+                    
                 }
 
                 return;
@@ -214,7 +233,7 @@ public class Enemy_Movement : MonoBehaviour
             else if(colliders[i].gameObject.name == "background-v3 foreground")
             {
                 Debug.Log("In here");
-                faceDir = -faceDir;
+                faceDir = -1*faceDir;
                 isRunAway = false;
             }
         }

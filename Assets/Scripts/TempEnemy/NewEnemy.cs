@@ -41,6 +41,7 @@ public class NewEnemy : Enemy {
 	private const int FACE_RIGHT = 1;
 	private const int FACE_LEFT = -1;
 
+
 	public Transform groundPoint;
 	public float radius = 0.1f;
 	public LayerMask groundMask;
@@ -98,6 +99,9 @@ public class NewEnemy : Enemy {
 		case EnemyState.ATTACK:
 				AttackPlayer ();
 				return;
+        case EnemyState.IDLE:
+                idleState();
+                return;
 		default:
 			return;
 		}
@@ -107,27 +111,38 @@ public class NewEnemy : Enemy {
 	public void ChasePlayer() {
 		anim.SetBool ("Attack", false);
 		GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, transform));
-		if (check.Length > 0) {
-			attackSwingCurrentTime = attackSwingTime;
-			currentState = EnemyState.ATTACK;
+        if (check.Length > 0) {
+            attackSwingCurrentTime = attackSwingTime;
+            currentState = EnemyState.ATTACK;
 
-			return;
-		} else {
-			Vector2 toMove;
-			if (player.transform.position.x > transform.position.x) {
-				faceDir = FACE_RIGHT;
-				anim.SetInteger("speed", (int)moveSpeed);
-				toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-				transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-			} else {
-				faceDir = FACE_LEFT;
-				anim.SetInteger("speed", (int)moveSpeed);
-				transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-				toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-			}
-			GetComponent<Rigidbody2D>().velocity = toMove;
-			left_end_pos = transform.position.x - length;
-			right_end_pos = transform.position.x + length;
+            return;
+        } else {
+
+            if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength)
+            {
+                Vector2 toMove;
+                if (player.transform.position.x > transform.position.x)
+                {
+                    faceDir = FACE_RIGHT;
+                    anim.SetInteger("speed", (int)moveSpeed);
+                    toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                    transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                }
+                else
+                {
+                    faceDir = FACE_LEFT;
+                    anim.SetInteger("speed", (int)moveSpeed);
+                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                    toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                }
+                GetComponent<Rigidbody2D>().velocity = toMove;
+                left_end_pos = transform.position.x - length;
+                right_end_pos = transform.position.x + length;
+            }
+            else
+            {
+                currentState = EnemyState.IDLE;
+            }
 		}
 	}
 
@@ -156,6 +171,38 @@ public class NewEnemy : Enemy {
 			anim.SetBool ("Attack", false);
 		}
 	}
+
+    public void idleState()
+    {
+        Vector2 toMove;
+        if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
+        {
+
+            anim.SetInteger("speed", (int)moveSpeed - 1);
+            toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
+            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            GetComponent<Rigidbody2D>().velocity = toMove;
+        }
+        else
+        {
+            faceDir = FACE_RIGHT;
+
+        }
+        if ((faceDir == FACE_RIGHT) && transform.position.x <= right_end_pos)
+        {
+            anim.SetInteger("speed", (int)moveSpeed - 1);
+            toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
+            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            GetComponent<Rigidbody2D>().velocity = toMove;
+        }
+        else
+            faceDir = FACE_LEFT;
+
+        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength)
+            currentState = EnemyState.MOVE;
+
+    }
+
 
 	public override void takeDamage (int damage)
 	{
