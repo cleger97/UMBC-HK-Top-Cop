@@ -27,11 +27,11 @@ public class Player : MonoBehaviour {
 	private List<State> states;
 
 	// Hit List
-	private List<int> leftDamageList;
-    private List<int> rightDamageList;
+	private List<float> leftDamageList;
+    private List<float> rightDamageList;
 
-    private int leftTotalDamage;
-    private int rightTotalDamage;
+    private float leftTotalDamage;
+    private float rightTotalDamage;
     // animator
     private Animator anim;
 
@@ -76,7 +76,7 @@ public class Player : MonoBehaviour {
 	public float invulTime;
 	public float currInvulTime = 0;
 
-	private float healthRegen = 2.5f;
+	private float healthRegen = 0f;
 
 	public Transform healthBar;
 	public Text hpbar_text;
@@ -120,8 +120,8 @@ public class Player : MonoBehaviour {
 
 		// state list
 		states = new List<State> ();
-		leftDamageList = new List<int> ();
-        rightDamageList = new List<int>();
+		leftDamageList = new List<float> ();
+        rightDamageList = new List<float>();
 		// animation tools
 		anim = GetComponent<Animator> ();
 
@@ -142,6 +142,7 @@ public class Player : MonoBehaviour {
 		maxHealth = 250;
 		currentHealth = maxHealth;
 
+		UpdateHealth (0);
 		// init objective
 		// objectiveHandle.SetGoalType(0, 10);
 
@@ -255,18 +256,21 @@ public class Player : MonoBehaviour {
 		}
 
 		if (!isBlocking && (leftTotalDamage > 0|| rightTotalDamage > 0)) {
-			int totalDamage = leftTotalDamage + rightTotalDamage;
+			float totalDamage = leftTotalDamage + rightTotalDamage;
 			currentHealth -= totalDamage;
-			UpdateHealth ();
+			UpdateHealth (totalDamage);
 		}
 		else if (isBlocking){
-			if (faceDirection == 1 && leftTotalDamage > 0)
+			float totalDamage = 0;
+			if (faceDirection == 1 && leftTotalDamage > 0) {
 				currentHealth -= leftTotalDamage;
-			else if (faceDirection == -1 && rightTotalDamage > 0)
+				totalDamage += leftTotalDamage;
+			} else if (faceDirection == -1 && rightTotalDamage > 0) {
 				currentHealth -= rightTotalDamage;
-
+				totalDamage += rightTotalDamage;
+			}
 			if (leftTotalDamage > 0 || rightTotalDamage > 0) {
-				UpdateHealth();
+				UpdateHealth(totalDamage);
 			}
 
 		}
@@ -448,11 +452,14 @@ public class Player : MonoBehaviour {
 		}
 	}
 		
-	void UpdateHealth() {
+	void UpdateHealth(float totalDamage) {
 		//Debug.Log ("Update Health");
 		//Debug.Log (currentHealth);
 		//Debug.Log (maxHealth);
-		rend.color = Color.red;
+		if (leftTotalDamage + rightTotalDamage > 0 && isBlocking == false) {
+			rend.color = Color.red;
+		}
+
 		// five frames to fix red
 		isRed = true;
 		timeRed = 1f;
@@ -497,7 +504,7 @@ public class Player : MonoBehaviour {
 		// i.e. partial heal 
 		currentHealth += healthRegen;
 
-		UpdateHealth ();
+		UpdateHealth (-healthRegen);
 	}
 
 	public bool IsPlayerAlive()

@@ -46,24 +46,20 @@ public class EnemySpawner : MonoBehaviour
         //if (Enemy.return_num_enemy() <= numToSpawn / 3)
         //{
             //Debug.Log("Num_enemy = " + Enemy.return_num_enemy() + "curr spawn rate = " + numToSpawn);
-
-            if (enemyData == null || Enemy.return_num_enemy() <= numToSpawn / 3)
+			Debug.Log(Enemy.return_num_enemy());
+            if (Enemy.return_num_enemy() <= numToSpawn)
             {
                 // Debug.Log("Num_enemy = " + enemyData.return_num_enemy() + "curr spawn rate = " + numToSpawn);
 
-                for (int i = 0; i < numToSpawn; i++)
+                
+                int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+				Enemy spawned = Enemy.InstantiateNew (spawnPoints [spawnPointIndex].position);
+                if (enemyData == null)
                 {
-                    int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-                    GameObject enemySpawned = Instantiate(enemy, spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
-                    if (enemyData == null)
-                    {
-                        enemyData = enemySpawned.GetComponent<Enemy>();
-                    }
-
+					enemyData = spawned;
                 }
                 numWaves++;
-                numToSpawn++;
-                repeatRate = spawnRate;
+				repeatRate = spawnRate * ObjectiveScript.instance.GetPercentRemaining();
             }
             else
                 repeatRate = checkRate;

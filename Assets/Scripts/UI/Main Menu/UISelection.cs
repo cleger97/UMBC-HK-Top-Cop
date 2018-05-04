@@ -10,6 +10,8 @@ public class UISelection : MonoBehaviour {
 	public MenuUIHandle UIHandle;
 
 	private int selectLocation = 0;
+
+	private float delay = 0.8f;
 	// 0 for restart, 1 for return, 2 for continue
 
 	// active for either pause or defeat.
@@ -23,6 +25,8 @@ public class UISelection : MonoBehaviour {
 		selectLocation = 0;
 		isPause = UIHandle.paused;
 		this.transform.position = RestartButton.transform.position;
+		delay = 0.8f;
+		Debug.Log ("Is enable firing??");
 	}
 	// Update is called once per frame
 	void Update () {
@@ -38,33 +42,6 @@ public class UISelection : MonoBehaviour {
 				vertAdjust = true;
 			}
 		}
-
-
-
-		//Debug.Log (isPause);
-
-		if (Input.GetButtonDown ("Fire1") || Input.GetKeyDown (KeyCode.Return) || Input.GetButtonDown("Submit")) {
-			switch (selectLocation) {
-			case 0:
-				UIHandle.RestartLoad ();
-				break;
-			case 1:
-				UIHandle.ReturnLoad ();
-				break;
-			case 2:
-				UIHandle.ResumeGame ();
-				break;
-			default:
-				Debug.LogWarning ("Defaulted");
-				break;
-			}
-		}
-
-		//if (Input.GetKeyDown (KeyCode.Escape) || Input.GetButtonDown("Menu")) {
-		//	if (isPause) {
-		//		UIHandle.ResumeGame ();
-		//	}
-		//}
 
 		if (verticalInput > 0) {
 			switch (selectLocation) {
@@ -118,6 +95,29 @@ public class UISelection : MonoBehaviour {
 					break;
 				}
 			} 
+		}
+		// input delay of 0.8s
+		if (delay > 0) {
+			//Debug.Log (delay);
+			delay -= Time.unscaledDeltaTime;
+			return;
+		}
+		// don't allow input before at least 1.5 seconds
+		if (Input.GetButtonDown ("Fire1") || Input.GetKeyDown (KeyCode.Return) || Input.GetButtonDown("Submit")) {
+			switch (selectLocation) {
+			case 0:
+				UIHandle.RestartLoad ();
+				break;
+			case 1:
+				UIHandle.ReturnLoad ();
+				break;
+			case 2:
+				UIHandle.ResumeGame ();
+				break;
+			default:
+				Debug.LogWarning ("Defaulted");
+				break;
+			}
 		}
 
 	}

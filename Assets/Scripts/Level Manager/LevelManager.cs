@@ -37,17 +37,29 @@ public class LevelManager : MonoBehaviour {
 	// Level Manager shouldn't need to update
 	// Call each function it needs accordingly
 
-	// use this when manually changing level
-	public void UpdateLevel(int level) {
-		if (level != 0) {
+	private void DoWhenUpdateLevel() {
+		Enemy.resetEnemyCount ();
+		if (currentLevel != 0) {
 			MenuUIHandle.instance.DisableControls ();
 		} else {
 			MenuUIHandle.instance.EnableControls ();
 		}
-		currentLevel = level;
+
+		if (levels [currentLevel] == "Victory") {
+			objectiveHandle.Victory ();
+		}
+
 		if (objectiveHandle.UIShow == false && currentLevel != 0) {
 			objectiveHandle.ActivateObjects ();
 		}
+
+	}
+
+	// use this when manually changing level
+	public void UpdateLevel(int level) {
+		
+		currentLevel = level;
+		DoWhenUpdateLevel ();
 	}
 
 	public void NextLevel() {
@@ -59,20 +71,13 @@ public class LevelManager : MonoBehaviour {
 			SceneManager.LoadScene (levels [currentLevel], LoadSceneMode.Single);
 		}
 
-		if (levels [currentLevel] == "Victory") {
-			objectiveHandle.Victory ();
-		}
+		DoWhenUpdateLevel ();
 	}
 
 	public void LoadSpecificLevel(int level) {
 		currentLevel = level;
 		SceneManager.LoadScene (levels [level], LoadSceneMode.Single);
-		if (MenuUIHandle.instance != null && level == 0) {
-			MenuUIHandle.instance.EnableControls ();
-		}
-		if (objectiveHandle.UIShow == false && currentLevel != 0) {
-			objectiveHandle.ActivateObjects ();
-		}
+		DoWhenUpdateLevel ();
 	}
 
 	public void LoadSpecificLevel(string level) {
@@ -87,6 +92,8 @@ public class LevelManager : MonoBehaviour {
 			// new level selected
 			SceneManager.LoadScene(levels[currentLevel], LoadSceneMode.Single);
 		}
+
+		DoWhenUpdateLevel ();
 	}
 
 }

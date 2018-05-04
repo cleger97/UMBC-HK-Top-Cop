@@ -79,7 +79,9 @@ public class MenuUIHandle : MonoBehaviour {
 		controls.SetActive (false);
 	}
 
+	// GUI input detects input as soon as it fires
 	void Update() {
+		Debug.Log (levelManager.currentLevel);
 		if (levelManager.currentLevel == 0) {
 			return;
 		}
@@ -92,8 +94,6 @@ public class MenuUIHandle : MonoBehaviour {
 
 			}
 		}
-
-
 	}
 
 
@@ -152,6 +152,7 @@ public class MenuUIHandle : MonoBehaviour {
 		objective.ActivateObjects ();
 		Debug.Log ("Clicked!");
 		SceneManager.LoadScene(currSceneName, LoadSceneMode.Single);
+		paused = false;
 		Time.timeScale = 1;
 	}
 
@@ -162,6 +163,7 @@ public class MenuUIHandle : MonoBehaviour {
 		Debug.Log ("Clicked!");
 		SceneManager.LoadScene (menuSceneName, LoadSceneMode.Single);
 		levelManager.UpdateLevel (0);
+		paused = false;
 		Time.timeScale = 1;
 	}
 

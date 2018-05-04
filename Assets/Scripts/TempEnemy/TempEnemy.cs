@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class TempEnemy: Enemy
 {
-   
-   
-    public GameObject healthBar;
 	public float maxHealth;
 	public float currHealth;
 	public int damage;
@@ -230,6 +227,7 @@ public class TempEnemy: Enemy
 	public void SetHealthBar (float health)
 	{
 		float calHealth = health / maxHealth;
+
 		healthBar.transform.localScale = new Vector3 (calHealth, healthBar.transform.localScale.y, healthBar.transform.localScale.z);
 	}
 }

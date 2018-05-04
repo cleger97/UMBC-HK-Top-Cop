@@ -3,8 +3,13 @@ guid: 806b7e74072a32441a7c17a1bee38bc2
 timeCreated: 1511968878
 licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - enemyPrototype: {fileID: 1413599886262804, guid: bd45dd909f4d64b44a2f0754eac8c76d,
+      type: 2}
+  - healthPrototype: {fileID: 1229699828839656, guid: 10acfc159fdd4d448939356b57432586,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

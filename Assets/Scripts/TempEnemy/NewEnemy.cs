@@ -9,11 +9,9 @@ public class NewEnemy : Enemy {
 	private EnemyState currentState;
 
 
-	public GameObject healthBar;
-
 	public float maxHealth = 50f;
 	public float currHealth = 50f;
-	public int damage;
+	public const float damage = 10f;
 	public float moveSpeed;
 	public float attkCooldown;
 
@@ -24,7 +22,8 @@ public class NewEnemy : Enemy {
 	GameObject player;
 	Player playerData;
 	private float stunTime;
-	private const float attackSwingTime = 1.5f;
+	private const float baseStunTime = 0.25f;
+	private const float attackSwingTime = 0.6f;
 
 	private float attackSwingCurrentTime;
 
@@ -57,6 +56,8 @@ public class NewEnemy : Enemy {
 
 		left_end_pos = transform.position.x - length; 
 		right_end_pos = transform.position.x + length;
+
+		currentState = EnemyState.MOVE;
 	}
 	
 	// Update is called once per frame
@@ -87,6 +88,8 @@ public class NewEnemy : Enemy {
 			return;
 		}
 
+		Debug.Log (currentState);
+
 		// if not stunned then do something with it's current state
 		switch (currentState) {
 		case EnemyState.MOVE:
@@ -103,16 +106,12 @@ public class NewEnemy : Enemy {
 
 	public void ChasePlayer() {
 		anim.SetBool ("Attack", false);
-		GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (detectionCircleRadius, transform));
+		GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, transform));
 		if (check.Length > 0) {
-			GameObject player = check [0];
-			GameObject[] checkInAttack = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
-			if (checkInAttack.Length > 0) {
-				attackSwingCurrentTime = attackSwingTime;
-				currentState = EnemyState.ATTACK;
-				anim.SetBool ("Attack", true);
-				return;
-			}
+			attackSwingCurrentTime = attackSwingTime;
+			currentState = EnemyState.ATTACK;
+
+			return;
 		} else {
 			Vector2 toMove;
 			if (player.transform.position.x > transform.position.x) {
@@ -141,6 +140,9 @@ public class NewEnemy : Enemy {
 			// Wait for attack backswing
 			if (attackSwingCurrentTime > 0) {
 				attackSwingCurrentTime -= Time.deltaTime;
+				if (attackSwingCurrentTime < 0.3f) {
+					anim.SetBool ("Attack", true);
+				}
 				if (attackSwingCurrentTime < 0) {
 					attackSwingCurrentTime = 0;
 				}
@@ -149,8 +151,9 @@ public class NewEnemy : Enemy {
 			// If the attack backswing is over then continue onto the attack
 			float distance = player.transform.position.x - this.transform.position.x;
 			int direction = (int) Mathf.Sign (distance);
-			player.GetComponent<Player> ().GetHit (damage,direction);
+			player.GetComponent<Player> ().GetHit ((int)damage,direction);
 			attackSwingCurrentTime = attackSwingTime;
+			anim.SetBool ("Attack", false);
 		}
 	}
 
@@ -159,7 +162,7 @@ public class NewEnemy : Enemy {
 
 		currHealth -= damage;
 		GetComponent<SpriteRenderer> ().material.SetColor ("_Color", Color.red);
-		SetHealthBar (currHealth);
+		SetHealthBar (currHealth, maxHealth);
 		timeRed = TimeDisplayHurt;
 
 		if (currHealth <= 0) {
@@ -167,7 +170,7 @@ public class NewEnemy : Enemy {
 		}
 
 		// Apply hitstun
-		stunTime = (stunTime > 1f) ? stunTime : 1f;
+		stunTime = (stunTime > baseStunTime) ? stunTime : baseStunTime;
 		currentState = EnemyState.STUNNED;
 	}
 
@@ -198,9 +201,5 @@ public class NewEnemy : Enemy {
 		this.enabled = false;
 	}
 
-	public void SetHealthBar (float health)
-	{
-		float calHealth = health / maxHealth;
-		healthBar.transform.localScale = new Vector3 (calHealth, healthBar.transform.localScale.y, healthBar.transform.localScale.z);
-	}
+
 }

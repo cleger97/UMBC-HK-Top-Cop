@@ -67,9 +67,10 @@ public class ElevatorEnemySpawner : MonoBehaviour {
 
 		if (enemyContainer.childCount < maxEnemies) {
 			int spawnPoint = Random.Range (0, spawnPoints.Length);
-			GameObject spawn = Instantiate (enemyPrototype, spawnPoints [spawnPoint].position, Quaternion.identity, enemyContainer);
 
-			Setup (spawn);
+			Enemy toSpawn = Enemy.InstantiateNew (spawnPoints [spawnPoint].position);
+
+			Setup (toSpawn.gameObject);
 
 		}
 	}
@@ -81,5 +82,12 @@ public class ElevatorEnemySpawner : MonoBehaviour {
 		enemyToSet.GetComponent<SpriteRenderer> ().sprite = enemyJump;
 
 		enemyToSet.transform.localScale = new Vector3 (2, 2, 2);
+
+		enemyToSet.GetComponent<SpriteRenderer> ().sortingLayerName = "Elevator";
+		enemyToSet.GetComponent<SpriteRenderer> ().sortingOrder = 5;
+
+		enemyToSet.transform.GetChild (1).GetComponent<Canvas> ().sortingLayerName = "Elevator";
+		enemyToSet.transform.GetChild (1).GetComponent<Canvas> ().sortingOrder = 5;
+
 	}
 }

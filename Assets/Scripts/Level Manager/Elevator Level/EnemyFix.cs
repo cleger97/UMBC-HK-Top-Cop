@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyFix : MonoBehaviour {
 
-	public TempEnemy normalScript;
+	public Enemy normalScript;
 	public BoxCollider2D collider;
 	public BoxCollider2D playerCollider;
 	// Use this for initialization
@@ -21,7 +21,7 @@ public class EnemyFix : MonoBehaviour {
 		}
 
 		collider = this.GetComponent<BoxCollider2D> ();
-		normalScript = this.GetComponent<TempEnemy> ();
+		normalScript = this.GetComponent<Enemy> ();
 		// Falling enemy - doesn't collide w/ enemy or player
 		this.gameObject.layer = 11;
 		normalScript.enabled = false;
