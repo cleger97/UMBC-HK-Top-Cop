@@ -89,7 +89,7 @@ public class NewEnemy : Enemy {
 			return;
 		}
 
-		Debug.Log (currentState);
+		//Debug.Log (currentState);
 
 		// if not stunned then do something with it's current state
 		switch (currentState) {
