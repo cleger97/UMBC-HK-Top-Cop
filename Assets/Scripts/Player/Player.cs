@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour {
 	// global int
 	private const float AVG_FRAME_TIME = 0.0212f;
+    private const int ObjectLayer = 13;
 	// state conditions
 	// depending on the state, do something
 	private enum State { ATTACK, BLOCK, MOVE, IDLE, JUMP }
@@ -26,31 +27,31 @@ public class Player : MonoBehaviour {
 	private bool alreadyInput;
 	private List<State> states;
 
-	// Hit List
+	/* Damage List */
 	private List<float> leftDamageList;
     private List<float> rightDamageList;
 
     private float leftTotalDamage;
     private float rightTotalDamage;
-    // animator
+    /* Animator */
     private Animator anim;
 
-	// various state variables
-	// blocking:
+	/* State Variables */
+    // Substate: Blocking
 	private bool isBlocking;
 
-	// attacking:
+	// Substate: Attacking
 	public int baseDamage = 25;
 	public float baseAtkRange = 3f;
 	public int baseKBForce = 100;
 	public float damageRadius = 0.5f; 
 	public Transform dmgArea;
 
-	// timers between attacking
 	private float attackCD = 0;
 	private float animTimer = 0;
 
-	// combo count
+	// Combo counter
+    // "Shoryuken"
 	private int currentHits;
 	private const int MAX_COMBO = 2;
 
@@ -70,18 +71,21 @@ public class Player : MonoBehaviour {
 	public float radius;
 	public LayerMask groundMask;
 
-	// player data
+	// Player data
 	public int maxHealth;
 	public float currentHealth;
+    // Block Health
+    public float blockHealth = 150f;
+    private float maxBlockHealth = 150f;
+    private float timeSinceLastBlock = 0f;
+
 	public float invulTime;
 	public float currInvulTime = 0;
 
 	private float healthRegen = 0f;
 
 	public Transform healthBar;
-	public Text hpbar_text;
-	// location of the health bar among child objects
-	public int hpbar_health = 1;
+
 	// is dead?
 	private bool isDead = false;
 
@@ -94,6 +98,11 @@ public class Player : MonoBehaviour {
 	public Text enemyCounter;
 	public ObjectiveScript objectiveHandle;
 
+    // item pickups
+    private Transform collidedObject;
+    private bool isCarrying = false;
+
+
 	// Assign core objects in Awake()
 	void Awake() {
 		// objective stuff
@@ -105,7 +114,6 @@ public class Player : MonoBehaviour {
 
 			// health stuff
 			healthBar = GameObject.Find ("Objective Canvas").transform.GetChild (2);
-			hpbar_text = healthBar.GetChild (2).GetComponent<Text> ();
 		}
 
 
@@ -157,6 +165,7 @@ public class Player : MonoBehaviour {
 			Block ();
 		} else {
 			Unblock ();
+            if (timeSinceLastBlock == -1) { timeSinceLastBlock = 0; }
 		}
 
 		if (states.Contains (State.ATTACK)) {
@@ -245,6 +254,12 @@ public class Player : MonoBehaviour {
 			}
 
 		}
+        // Handle block health
+        if (timeSinceLastBlock != -1)
+        {
+            timeSinceLastBlock += Time.deltaTime;
+        }
+        
 
 		// Handle the damage input
 		for (int i = 0; i < leftDamageList.Count; i++) {
@@ -261,17 +276,53 @@ public class Player : MonoBehaviour {
 			UpdateHealth (totalDamage);
 		}
 		else if (isBlocking){
+            
 			float totalDamage = 0;
-			if (faceDirection == 1 && leftTotalDamage > 0) {
-				currentHealth -= leftTotalDamage;
-				totalDamage += leftTotalDamage;
-			} else if (faceDirection == -1 && rightTotalDamage > 0) {
-				currentHealth -= rightTotalDamage;
-				totalDamage += rightTotalDamage;
+            Debug.Log("Right total damage " + rightTotalDamage);
+            Debug.Log("Left total damage " + leftTotalDamage);
+            Debug.Log("Block health: " + blockHealth);
+            Debug.Log("Face Direction: " + faceDirection);
+			if (faceDirection == 1) {
+                // right side block
+                if (leftTotalDamage > 0)
+                {
+                    currentHealth -= leftTotalDamage;
+                    totalDamage += leftTotalDamage;
+                }
+                if (rightTotalDamage > 0)
+                {
+                    if (blockHealth - rightTotalDamage < 0)
+                    {
+                        blockHealth = 0;
+                        totalDamage += (rightTotalDamage - blockHealth);
+                    } else {
+                        blockHealth -= rightTotalDamage;
+                    }
+                }
+				
+			} else if (faceDirection == -1) {
+                // left side block
+                if (rightTotalDamage > 0)
+                {
+                    currentHealth -= rightTotalDamage;
+                    totalDamage += rightTotalDamage;
+                }
+                if (leftTotalDamage > 0)
+                {
+                    if (blockHealth - leftTotalDamage < 0)
+                    {
+                        blockHealth = 0;
+                        totalDamage += (leftTotalDamage - blockHealth);
+                    }
+                    else
+                    {
+                        blockHealth -= leftTotalDamage;
+
+                    }
+                }
 			}
-			if (leftTotalDamage > 0 || rightTotalDamage > 0) {
-				UpdateHealth(totalDamage);
-			}
+            currentHealth -= totalDamage;
+			UpdateHealth(totalDamage);
 
 		}
 
@@ -288,10 +339,32 @@ public class Player : MonoBehaviour {
 			return;
 		}
 
+        Debug.Log(timeSinceLastBlock);
+        if (timeSinceLastBlock > 3.0f)
+        {
+            float incrementShield = 10f * Time.deltaTime; // should be 10 block/second
+            if (blockHealth < maxBlockHealth)
+            {
+                blockHealth += incrementShield;
+            }
+
+            if (blockHealth > maxBlockHealth) { blockHealth = maxBlockHealth; }
+            UpdateHealth(0);
+        }
+
+        if (Input.GetButton("ThrowItem") && !isBlocking)
+        {
+            if (isCarrying == false)
+            {
+                GrabItem();
+            }
+        }
+
 		// Get the input data
 		if (Input.GetKey (keybinds.blockKey) || Input.GetButton("Fire2")) {
 			//currentState = State.BLOCK;
 			states.Add (State.BLOCK);
+            timeSinceLastBlock = -1;
 		}
 
 		if (Input.GetKeyDown (keybinds.attackKey) || Input.GetButtonDown("Fire1")) {
@@ -307,13 +380,8 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-	
-
-
 
 	}
-
-
 
 	void Block() {
 		isBlocking = true;
@@ -382,6 +450,7 @@ public class Player : MonoBehaviour {
 		}
 
 	}
+
 	void Move() {
 		anim.SetBool ("idle", false);
 		// set the animator speed for the movement
@@ -438,7 +507,27 @@ public class Player : MonoBehaviour {
 		}
 
 	}
-		
+
+    void GrabItem()
+    {
+        int ThrowableObjectSpot = 4;
+
+        if (collidedObject == null)
+        {
+            Debug.Log("No object to pick up");
+            return;
+        }
+        ThrowableObject objToGrab = collidedObject.gameObject.GetComponent<ThrowableObject>();
+        if (objToGrab == null)
+        {
+            Debug.Log("Object is not throwable");
+            return;
+        }
+        objToGrab.Attach(this.transform.GetChild(ThrowableObjectSpot));
+
+        isCarrying = true;
+        return;
+    }
 
 	// Get hit: damage and knockback value
 	// Adds it to the damage list, to be calculated
@@ -453,10 +542,15 @@ public class Player : MonoBehaviour {
 	}
 		
 	void UpdateHealth(float totalDamage) {
-		//Debug.Log ("Update Health");
-		//Debug.Log (currentHealth);
-		//Debug.Log (maxHealth);
-		if (leftTotalDamage + rightTotalDamage > 0 && isBlocking == false) {
+        // index of child objects
+        int backindex = 0;
+        int hpindex = 1;
+        int shieldindex = 2;
+        int text = 3;
+
+        Text hpbar_text = null;
+		
+		if (totalDamage > 0) {
 			rend.color = Color.red;
 		}
 
@@ -468,14 +562,24 @@ public class Player : MonoBehaviour {
 			currentHealth = maxHealth;
 		}
 
-		decimal percent = (decimal)currentHealth / (decimal)maxHealth;
-		healthBar.GetChild(hpbar_health).localScale = new Vector3((float)percent, 1, 1);
-		percent *= 100;
+        if (healthBar != null)
+        {
+            hpbar_text = healthBar.GetChild(text).gameObject.GetComponent<Text>();
 
-		hpbar_text.text = "Health: " + percent.ToString ("##") + "% ";
+            decimal percent = (decimal)currentHealth / (decimal)maxHealth;
+            healthBar.GetChild(hpindex).localScale = new Vector3((float)percent, 1, 1);
+            percent *= 100;
+
+            decimal shield = (decimal)blockHealth / (decimal)maxBlockHealth;
+            healthBar.GetChild(shieldindex).localScale = new Vector3((float)shield, 1, 1);
+            shield *= 100;
+
+            hpbar_text.text = "Health: " + percent.ToString("##") + "% ";
+
+        }
 		//Freeze player movement
 		if (currentHealth <= 0) {
-			hpbar_text.text = "Health: 0%";
+            if (healthBar != null) { hpbar_text.text = "Health: 0%"; }
 			playerDead ();
 		}
 
@@ -537,4 +641,29 @@ public class Player : MonoBehaviour {
 		Gizmos.color = Color.green;
 		Gizmos.DrawWireSphere (dmgArea.position, damageRadius);
 	}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collision entered!");
+
+        Debug.Log(collision.contacts[0].normal);
+
+        if (collision.gameObject.layer == ObjectLayer)
+        {
+            Debug.Log("Object Collision - Updated");
+            collidedObject = collision.transform;
+            Debug.Log(collision.gameObject);
+        }
+        
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        Debug.Log("Collision exit");
+        if (collidedObject == collision.transform)
+        {
+            Debug.Log("Object Collision - Updated");
+            collidedObject = null;
+        }
+    }
 }

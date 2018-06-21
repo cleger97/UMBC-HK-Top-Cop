@@ -81,7 +81,7 @@ public class MenuUIHandle : MonoBehaviour {
 
 	// GUI input detects input as soon as it fires
 	void Update() {
-		Debug.Log (levelManager.currentLevel);
+		//Debug.Log (levelManager.currentLevel);
 		if (levelManager.currentLevel == 0) {
 			return;
 		}
