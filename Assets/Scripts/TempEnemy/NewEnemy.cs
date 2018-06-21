@@ -180,7 +180,7 @@ public class NewEnemy : Enemy {
 
             anim.SetInteger("speed", (int)moveSpeed - 1);
             toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
-            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             GetComponent<Rigidbody2D>().velocity = toMove;
         }
         else
@@ -192,7 +192,7 @@ public class NewEnemy : Enemy {
         {
             anim.SetInteger("speed", (int)moveSpeed - 1);
             toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
-            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             GetComponent<Rigidbody2D>().velocity = toMove;
         }
         else
