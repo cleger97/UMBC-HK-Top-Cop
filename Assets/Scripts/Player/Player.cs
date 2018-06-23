@@ -57,7 +57,7 @@ public class Player : MonoBehaviour {
 
 	// movement:
 	// rigidbody
-	public Rigidbody2D rb2D;
+	private Rigidbody2D rb2D;
 	// direction : 1 for right, -1 for left
 	private int faceDirection = 1;
 	// speed
@@ -65,7 +65,7 @@ public class Player : MonoBehaviour {
 	public int jumpHeight = 250;
 
 	// aerial movement
-	private bool isGrounded = true;
+	public bool isGrounded = true;
 	// detects ground
 	public Transform groundPoint;
 	public float radius;
@@ -75,16 +75,16 @@ public class Player : MonoBehaviour {
 	public int maxHealth;
 	public float currentHealth;
     // Block Health
-    public float blockHealth = 150f;
-    private float maxBlockHealth = 150f;
+    private float blockHealth = 150f;
+    public float maxBlockHealth = 150f;
     private float timeSinceLastBlock = 0f;
 
-	public float invulTime;
-	public float currInvulTime = 0;
+	private float invulTime = 0f;
+	private float currInvulTime = 0;
 
 	private float healthRegen = 0f;
 
-	public Transform healthBar;
+	private Transform healthBar;
 
 	// is dead?
 	private bool isDead = false;
@@ -99,6 +99,7 @@ public class Player : MonoBehaviour {
 	public ObjectiveScript objectiveHandle;
 
     // item pickups
+    private ThrowableObject carriedObject = null;
     private Transform collidedObject;
     private bool isCarrying = false;
 
@@ -339,7 +340,7 @@ public class Player : MonoBehaviour {
 			return;
 		}
 
-        Debug.Log(timeSinceLastBlock);
+        //Debug.Log(timeSinceLastBlock);
         if (timeSinceLastBlock > 3.0f)
         {
             float incrementShield = 10f * Time.deltaTime; // should be 10 block/second
@@ -352,11 +353,14 @@ public class Player : MonoBehaviour {
             UpdateHealth(0);
         }
 
-        if (Input.GetButton("ThrowItem") && !isBlocking)
+        if (Input.GetButtonDown("ThrowItem") && !isBlocking)
         {
             if (isCarrying == false)
             {
                 GrabItem();
+            } else
+            {
+                ThrowItem(faceDirection);
             }
         }
 
@@ -475,8 +479,8 @@ public class Player : MonoBehaviour {
 		anim.SetInteger ("anim_speed", 0);
 		anim.speed = 1;
 
-		// preserve y velocity
-		float yVel = rb2D.velocity.y;
+        // preserve y velocity
+        float yVel = rb2D.velocity.y;
 		Vector2 newVel = new Vector2 (0, yVel);
 		rb2D.velocity = newVel;
 
@@ -517,16 +521,34 @@ public class Player : MonoBehaviour {
             Debug.Log("No object to pick up");
             return;
         }
+        
         ThrowableObject objToGrab = collidedObject.gameObject.GetComponent<ThrowableObject>();
         if (objToGrab == null)
         {
             Debug.Log("Object is not throwable");
             return;
         }
+        carriedObject = objToGrab;
         objToGrab.Attach(this.transform.GetChild(ThrowableObjectSpot));
 
         isCarrying = true;
         return;
+    }
+
+    void ThrowItem(int direction)
+    {
+        carriedObject.Throw(direction);
+        carriedObject = null;
+
+        isCarrying = false;
+    }
+
+    void DropItem()
+    {
+        carriedObject.Drop();
+        carriedObject = null;
+
+        isCarrying = false;
     }
 
 	// Get hit: damage and knockback value
@@ -644,25 +666,25 @@ public class Player : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision entered!");
+        //Debug.Log("Collision entered!");
 
-        Debug.Log(collision.contacts[0].normal);
+        //Debug.Log(collision.contacts[0].normal);
 
         if (collision.gameObject.layer == ObjectLayer)
         {
-            Debug.Log("Object Collision - Updated");
+            //Debug.Log("Object Collision - Updated");
             collidedObject = collision.transform;
-            Debug.Log(collision.gameObject);
+            //Debug.Log(collision.gameObject);
         }
         
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        Debug.Log("Collision exit");
+        //Debug.Log("Collision exit");
         if (collidedObject == collision.transform)
         {
-            Debug.Log("Object Collision - Updated");
+           // Debug.Log("Object Collision - Updated");
             collidedObject = null;
         }
     }

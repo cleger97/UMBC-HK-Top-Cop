@@ -48,6 +48,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1492069521168380
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4608551969551654}
+  m_Layer: 9
+  m_Name: ThrowableSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1742032601290976
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,15 +158,29 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1371225403449534}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.855, y: 0.556, z: 0}
+  m_LocalPosition: {x: 0.889861, y: -1.3076265, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4178762019504166}
   - {fileID: 4451703127259722}
   - {fileID: 4753510265039452}
   - {fileID: 4478401310771520}
+  - {fileID: 4608551969551654}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4608551969551654
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1492069521168380}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4546387647893764}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4753510265039452
 Transform:
@@ -220,7 +249,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &61081617805114842
 BoxCollider2D:
@@ -330,21 +359,17 @@ MonoBehaviour:
   baseKBForce: 100
   damageRadius: 0.5
   dmgArea: {fileID: 4753510265039452}
-  rb2D: {fileID: 0}
   speed: 5
   jumpHeight: 350
+  isGrounded: 1
   groundPoint: {fileID: 4451703127259722}
   radius: 0.1
   groundMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 8448
   maxHealth: 0
   currentHealth: 0
-  invulTime: 0.4
-  currInvulTime: 0
-  healthBar: {fileID: 0}
-  hpbar_text: {fileID: 0}
-  hpbar_health: 1
+  maxBlockHealth: 150
   enemyCounter: {fileID: 0}
   objectiveHandle: {fileID: 0}
 --- !u!114 &114971044792231974

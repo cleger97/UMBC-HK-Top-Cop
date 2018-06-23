@@ -80911,6 +80911,11 @@ Prefab:
       propertyPath: m_Size.x
       value: 10.24
       objectReference: {fileID: 0}
+    - target: {fileID: 61419253468312946, guid: 32eee08275687e243b04eb8ec4ea2880,
+        type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: faf5751554af43b4b824f52c4204a1cb, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 32eee08275687e243b04eb8ec4ea2880, type: 2}
   m_IsPrefabParent: 0
@@ -134129,6 +134134,11 @@ Prefab:
       propertyPath: m_IsTrigger
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 61419253468312946, guid: 32eee08275687e243b04eb8ec4ea2880,
+        type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: faf5751554af43b4b824f52c4204a1cb, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 32eee08275687e243b04eb8ec4ea2880, type: 2}
   m_IsPrefabParent: 0
