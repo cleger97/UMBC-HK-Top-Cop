@@ -271,14 +271,16 @@ public class Player : MonoBehaviour {
 			rightTotalDamage += rightDamageList[i];
 		}
 
+        float totalDamage = 0;
 		if (!isBlocking && (leftTotalDamage > 0|| rightTotalDamage > 0)) {
-			float totalDamage = leftTotalDamage + rightTotalDamage;
+			totalDamage = leftTotalDamage + rightTotalDamage;
 			currentHealth -= totalDamage;
 			UpdateHealth (totalDamage);
 		}
+
 		else if (isBlocking){
             
-			float totalDamage = 0;
+			totalDamage = 0;
             Debug.Log("Right total damage " + rightTotalDamage);
             Debug.Log("Left total damage " + leftTotalDamage);
             Debug.Log("Block health: " + blockHealth);
@@ -327,6 +329,12 @@ public class Player : MonoBehaviour {
 
 		}
 
+        if (totalDamage > 0 && isCarrying)
+        {
+            int damage = (int)((leftTotalDamage > rightTotalDamage) ?  leftTotalDamage : rightTotalDamage);
+            DropItem(damage);
+        }
+
 		leftTotalDamage = 0;
 		rightTotalDamage = 0;
 		leftDamageList.Clear ();
@@ -353,39 +361,42 @@ public class Player : MonoBehaviour {
             UpdateHealth(0);
         }
 
+	}
+
+	// Update is called once per frame
+	void Update () {
+        // Get the input data
+        if (Input.GetKey(keybinds.blockKey) || Input.GetButton("Fire2"))
+        {
+            //currentState = State.BLOCK;
+            states.Add(State.BLOCK);
+            timeSinceLastBlock = -1;
+        }
+
         if (Input.GetButtonDown("ThrowItem") && !isBlocking)
         {
             if (isCarrying == false)
             {
                 GrabItem();
-            } else
+            }
+            else
             {
-                ThrowItem(faceDirection);
+                ThrowItem(faceDirection, rb2D.velocity.x);
             }
         }
 
-		// Get the input data
-		if (Input.GetKey (keybinds.blockKey) || Input.GetButton("Fire2")) {
-			//currentState = State.BLOCK;
-			states.Add (State.BLOCK);
-            timeSinceLastBlock = -1;
-		}
-
-		if (Input.GetKeyDown (keybinds.attackKey) || Input.GetButtonDown("Fire1")) {
-			// if there's already been input (block has priority over attack)
-			if (!states.Contains (State.BLOCK)) {
-				states.Add (State.ATTACK);
-			}
-		}
+        if (Input.GetKeyDown(keybinds.attackKey) || Input.GetButtonDown("Fire1"))
+        {
+            // if there's already been input (block has priority over attack)
+            if (!states.Contains(State.BLOCK))
+            {
+                states.Add(State.ATTACK);
+            }
+        }
 
 
-	}
 
-	// Update is called once per frame
-	void Update () {
-		
-
-	}
+    }
 
 	void Block() {
 		isBlocking = true;
@@ -535,17 +546,17 @@ public class Player : MonoBehaviour {
         return;
     }
 
-    void ThrowItem(int direction)
+    void ThrowItem(int direction, float initial)
     {
-        carriedObject.Throw(direction);
+        carriedObject.Throw(direction, initial);
         carriedObject = null;
 
         isCarrying = false;
     }
 
-    void DropItem()
+    void DropItem(int direction)
     {
-        carriedObject.Drop();
+        carriedObject.Drop((int)Mathf.Sign(direction));
         carriedObject = null;
 
         isCarrying = false;

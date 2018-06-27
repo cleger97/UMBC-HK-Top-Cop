@@ -13,6 +13,10 @@ public class ThrowableObject : MonoBehaviour {
 
     public bool isLarge;
 
+    public int damage = 1000;
+
+    public float horizontalSpeed = 6f;
+
     private State currentState;
 
     private void Start()
@@ -43,12 +47,13 @@ public class ThrowableObject : MonoBehaviour {
         rb2D.velocity = Vector2.zero;
     }
 
-    public void Throw(int direction)
+    public void Throw(int direction, float initial)
     {
-        Vector2 force = new Vector2(3000f, 0f);
+        Vector2 force = new Vector2(horizontalSpeed, -1f);
         currentState = State.Thrown;
         // TODO: Add arcing for large.
         force.x = force.x * direction;
+        force.x += initial;
         Debug.Log(force.x);
 
         transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition.y + 0.5f);
@@ -62,21 +67,38 @@ public class ThrowableObject : MonoBehaviour {
         bx2D.enabled = true;
        
 
-        rb2D.AddForce(force);
+        rb2D.velocity = force;
     }
 
-    public void Drop()
+    public void Drop(int direction)
     {
         parent = null;
         transform.parent = null;
         currentState = State.Object;
 
         bx2D.enabled = true;
-        rb2D.bodyType = RigidbodyType2D.Kinematic;
+        rb2D.bodyType = RigidbodyType2D.Dynamic;
+
+        Vector2 dropAngle = new Vector2(2.5f * direction, 1f);
+        rb2D.velocity = dropAngle;
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
+        Debug.Log("Collision entered");
+        if (collision.gameObject.layer == 8)
+        {
+            if (transform.rotation != Quaternion.identity)
+            {
+                transform.rotation = Quaternion.identity;
+                return;
+            }
+
+            rb2D.velocity = Vector2.zero;
+            rb2D.angularVelocity = 0f;
+            rb2D.bodyType = RigidbodyType2D.Kinematic;
+        }
+
         switch (currentState)
         {
             case State.Object:
@@ -86,9 +108,9 @@ public class ThrowableObject : MonoBehaviour {
                 }
             case State.Thrown:
                 {
-                    if (collision.otherCollider.transform.tag == "Enemy")
+                    if (collision.transform.tag == "Enemy")
                     {
-
+                        collision.gameObject.GetComponent<Enemy>().takeDamage(damage);
                     }
                     break;
                 }

@@ -64,7 +64,7 @@ public class NewEnemy : Enemy {
 	// Update is called once per frame
 	void Update () {
 		// if paused don't do anything
-		if (MenuUIHandle.instance.paused == true) {
+		if (MenuUIHandle.instance != null && MenuUIHandle.instance.paused == true) {
 			return;
 		}
 		// if player dead then remove this object

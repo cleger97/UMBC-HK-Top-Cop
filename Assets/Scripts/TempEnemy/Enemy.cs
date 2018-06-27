@@ -15,7 +15,7 @@ public abstract class Enemy : MonoBehaviour {
 	private static Vector2 hpSize = new Vector2 (0.5f, 0.25f);
 
 	protected GameObject healthBar = null;
-    int health;
+    public int health;
     protected static int num_enemy_alive = 0;
 
 	public static GameObject enemyContainer;
