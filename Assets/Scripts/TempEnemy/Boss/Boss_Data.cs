@@ -3,18 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Boss_Data : MonoBehaviour{
+    private const int IS_DEAD = 1;
+    private const int IS_LOW = 2;
+    private const int IS_ALIVE = 3;
     private float regenTimer;
     private static float max_health = 400f;
     private float currHealth;
-    public GameObject healthBar;
+    private GameObject healthBar;
+    private GameObject currHealthLayer;
+
+    private const int TOP_LAYERH = 4;
+    private int currLayerH; 
 
     private float timeRed;
     public static float TimeDisplayHurt = 0.5f;
     Color defColor;
-  
-   
+
+    private const float COMBAT_EXIT_TIME = 5f;
+    private const float OUTCOMBAT_REG_CD = 2.0f;
+    private const float LOWH_REG_CD = 1.0f;
+
+    private float inCombatTimer;
+
     private bool lowHealth;
     private bool isDead;
+   
 
     private bool underAttack;
     
@@ -24,17 +37,22 @@ public class Boss_Data : MonoBehaviour{
         regenTimer = 1.0f;
         timeRed = TimeDisplayHurt;
 
+        healthBar = this.transform.GetChild(3).gameObject;
+        currHealthLayer = healthBar.transform.GetChild(TOP_LAYERH).gameObject;
+        currLayerH = TOP_LAYERH;
+
         defColor = GetComponent<SpriteRenderer>().material.GetColor("_Color");
-        
-        
+        inCombatTimer = 0f;
         lowHealth = false;
         underAttack = false;
         isDead = false;
+
+        
     }
 	
 	// Update is called once per frame
 	void Update () {
-
+        Debug.Log(currHealth);
         if (timeRed > 0)
         {
             timeRed -= Time.deltaTime;
@@ -42,8 +60,23 @@ public class Boss_Data : MonoBehaviour{
         else
             GetComponent<SpriteRenderer>().material.SetColor("_Color", defColor);
 
-        if (lowHealth)
-            inLowMode();
+        if (inCombatTimer > 0)
+        {
+            inCombatTimer -= Time.deltaTime;
+
+        }
+        else if(inCombatTimer <= 0 && !lowHealth)
+        {
+            if (regenTimer > 0)
+                regenTimer -= Time.deltaTime;
+            else
+            {
+                regenHealth(0.005f);
+                regenTimer = OUTCOMBAT_REG_CD;
+            }
+        }
+
+        
     }
 
     public bool isAlive()
@@ -51,49 +84,87 @@ public class Boss_Data : MonoBehaviour{
         return isDead;
     }
 
-    public int eneTakeDamage(int damage)
+    public float eneTakeDamage(int damage)
     {
         
         currHealth -= damage;
         underAttack = true;
         timeRed = TimeDisplayHurt;
+        inCombatTimer = COMBAT_EXIT_TIME;
 
-
-        //SetHealthBar(currHealth);
-        GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.red);
-        if (currHealth <= 0)
-        {
-            isDead = true;
-            return 1;
-            
-        }
-        else if (currHealth <= 0.3 * max_health)
-        {
-            Debug.Log("enter low health mode");
-            lowHealth = true;
-            return 2;
-        }
-        return 3;
-    }
-
-    public void SetHealthBar(float health)
-    {
-        float calHealth = health / max_health;
-        healthBar.transform.localScale = new Vector3(calHealth, healthBar.transform.localScale.y, healthBar.transform.localScale.z);
-    }
-
-    private void inLowMode()
-    {
         
+        GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.red);
+        float calHealth = currHealth / max_health;
+        SetHealthBar(calHealth);
+
+        return calHealth;
+       
+    }
+
+    public void SetHealthBar(float calHealth)
+    {
+        float calQuarterHealth = calHealth % 0.25f;
+        float percQuaterH = calQuarterHealth * 4;
+        float div = (calHealth / 0.25f);
+        int calLayer = (int)div;
+        //Debug.Log("div = " + layer + " remainder = " + calQuarterHealth);
+        if (calLayer < currLayerH - 1 && calLayer >= 0 )
+        {
+            currLayerH--;
+            currHealthLayer.transform.localScale = new Vector3(0f, currHealthLayer.transform.localScale.y, currHealthLayer.transform.localScale.z);
+            currHealthLayer = healthBar.transform.GetChild(currLayerH).gameObject;
+        }
+        else if (calLayer > currLayerH - 1 && calLayer < TOP_LAYERH)
+        {
+            currLayerH++;
+            currHealthLayer.transform.localScale = new Vector3(1f, currHealthLayer.transform.localScale.y, currHealthLayer.transform.localScale.z);
+            currHealthLayer = healthBar.transform.GetChild(currLayerH).gameObject;
+        }
+        
+
+        currHealthLayer.transform.localScale = new Vector3(percQuaterH, currHealthLayer.transform.localScale.y, currHealthLayer.transform.localScale.z);
+
+    }
+
+    public bool inLowMode()
+    {
+        lowHealth = true;
         if (regenTimer > 0)
             regenTimer -= Time.deltaTime;
         else
         {
-            currHealth += 0.02f * max_health;
-            regenTimer = 1.0f;
-            //SetHealthBar(currHealth);
+            regenHealth(0.01f);
+            regenTimer = LOWH_REG_CD;
             if (currHealth >= 0.5f * max_health)
+            {
                 lowHealth = false;
+                return false;
+            }
         }
+
+        /*if (inCombatTimer <= 0)
+            return false;*/
+
+
+        return true;
+    }
+    
+    private void regenHealth(float amountPer)
+    {
+        if (currHealth == max_health)
+            return;
+
+        if (currHealth + (currHealth * amountPer) > max_health)
+            currHealth = max_health;
+        else
+            currHealth += amountPer * max_health;
+
+
+        SetHealthBar(currHealth / max_health);
+    }
+
+    private void reduceIncomingDamage()
+    {
+
     }
 }

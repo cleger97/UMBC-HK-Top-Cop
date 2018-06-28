@@ -4,92 +4,98 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Boss_attack : MonoBehaviour {
+    
     Animator anim;
     
     GameObject player;
 
-    public float detectionCircleRadius;
+    //public float detectionCircleRadius;
     public float attackCircleRadius;
-    private float attkCoolDown;
+    
     private int damage;
     public Transform dmgArea;
+    private float attackCD;
 
-    public bool isAttacking;
+    private const float ATTACK_CD = 1f;
+    private const int ATTACK_INCREASE = 10;
 
-    
+    private bool attackUp;
     // Use this for initialization
     void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
-        isAttacking = false;
+        
         damage = 20;
-        attkCoolDown = 1f;
+        attackCD = 0.3f;
+
+        attackUp = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
+
     }
+    
 
     public bool attackCheck()
     {
-        GameObject[] check = Enemy.colliderTagSorter("Player", Enemy.getAllAround(detectionCircleRadius, transform));
-        if (check.Length > 0)
-        {
-            GameObject[] checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
+        anim.SetBool("isAttack",false);
+        GameObject[] check = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, transform));
 
-            GameObject player = check[0];
-            if (checkInAttack.Length > 0)
-                return true;
-            else
+        if (check.Length > 0)
+            return true;
+        else
+            return false;
+    }
+
+
+    public bool startAttack()
+    {
+        //anim.SetBool("isAttack", true);
+        GameObject[] checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
+        if (checkInAttack.Length > 0)
+        {
+            anim.SetInteger("speed", 0);
+            if (attackCD > 0)
             {
-                isAttacking = false;
-                anim.SetBool("isAttack", false);
-                return false;
+                attackCD -= Time.deltaTime;
+                if (attackCD <= 0.3f)
+                {
+                    anim.SetBool("isAttack", true);
+
+                }
+                return true;
             }
             
+
+            float distance = player.transform.position.x - this.transform.position.x;
+            int direction = (int)Mathf.Sign(distance);
+            player.GetComponent<Player>().GetHit(damage, direction);
+            attackCD = ATTACK_CD;
+            anim.SetBool("isAttack", false);
+            return true;
         }
         else
-        {
-            isAttacking = false;
             return false;
+    }
+
+    public void enter_lowH_mode()
+    {
+        if (!attackUp)
+        {
+            damage += ATTACK_INCREASE;
+            attackUp = true;
         }
+            
     }
 
-
-    public void startAttack()
+    public void exit_lowH_mode()
     {
-
-
-            //anim.SetBool("isAttack", true);
-            isAttacking = true;
-            Debug.Log(isAttacking);
-            float timer2 = 30f;
-            //this is temporary. It will pause the damage dealt until Tobinator actually hits in the animation
-            while (timer2 > 0)
-            {
-                timer2 -= Time.deltaTime;
-            }
-
-            GameObject[] checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
-            if (checkInAttack.Length > 0)
-            {
-
-                float distance = player.transform.position.x - this.transform.position.x;
-                int direction = (int)Mathf.Sign(distance);
-                //Debug.Log("Direction = " + direction);
-                // direction will be 1 for player on right side and -1 for player
-                // on left side
-                player.GetComponent<Player>().GetHit(damage, direction);
-
-            }
-
-           
-           
+        attackUp = false;
+        damage -= ATTACK_INCREASE; 
     }
 
-    public float getAttcool()
-    {
-        return attkCoolDown;
-    }
+    
+    
 }
 

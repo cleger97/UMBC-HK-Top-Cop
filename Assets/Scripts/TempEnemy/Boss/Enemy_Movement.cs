@@ -12,7 +12,7 @@ public class Enemy_Movement : MonoBehaviour
     Animator anim;
 
     private float currSpeed;
-    private const float CHASE_SPEED = 3;
+    private const int CHASE_SPEED = 3;
     private const int SLOW_SPEED = 1;
 
 
@@ -47,7 +47,7 @@ public class Enemy_Movement : MonoBehaviour
         rb2D = GetComponent<Rigidbody2D>();
         isRunAway = false;
         randomJumpTimer = Random.Range(1f, 5f);
-
+        currSpeed = SLOW_SPEED;
     }
 
     // Update is called once per frame
@@ -115,7 +115,7 @@ public class Enemy_Movement : MonoBehaviour
         }
     }
 
-    private void chasingPlayer()
+    public bool chasingPlayer()
     {
         if (Mathf.Abs(player.transform.position.x - transform.position.x) <= detectLength)
         {
@@ -123,61 +123,67 @@ public class Enemy_Movement : MonoBehaviour
             if (player.transform.position.x > transform.position.x)
             {
                 faceDir = FACE_RIGHT;
-                anim.SetInteger("speed", (int)currSpeed);
-                toMove = new Vector2(currSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                anim.SetInteger("speed", CHASE_SPEED);
+                toMove = new Vector2(CHASE_SPEED, GetComponent<Rigidbody2D>().velocity.y);
                 transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
             }
             else
             {
                 faceDir = FACE_LEFT;
-                anim.SetInteger("speed", (int)currSpeed);
+                anim.SetInteger("speed", CHASE_SPEED);
                 transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
-                toMove = new Vector2(-currSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                toMove = new Vector2(-CHASE_SPEED, GetComponent<Rigidbody2D>().velocity.y);
             }
             GetComponent<Rigidbody2D>().velocity = toMove;
             right_end_pos = transform.position.x + length;
             left_end_pos = transform.position.x - length;
-
+            return true;
         }
         else
         {
-            currSpeed = SLOW_SPEED;
-            idleTime();
+           
+            return false;
         }
-        detectObject();
+        //detectObject();
     }
 
-    private void idleTime()
+    public bool idleTime()
     {
-        
-            if (randomJumpTimer <= 0)
-            {
-                jump();
-                randomJumpTimer = Random.Range(1f, 5f);
-            }
-            Vector2 toMove;
-            if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
-            {
+        if (Mathf.Abs(player.transform.position.x - transform.position.x) <= detectLength)
+        {
+            
+            return false;
+        }
 
-                anim.SetInteger("speed", (int)currSpeed);
-                toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
-                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
-                GetComponent<Rigidbody2D>().velocity = toMove;
-            }
-            else
-            {
-                faceDir = FACE_RIGHT;
+        /*if (randomJumpTimer <= 0)
+        {
+            jump();
+            randomJumpTimer = Random.Range(1f, 5f);
+         }*/
+         Vector2 toMove;
+         if ((faceDir == FACE_LEFT) && transform.position.x >= left_end_pos)
+        {
+            anim.SetInteger("speed", SLOW_SPEED);
+            toMove = new Vector2(-SLOW_SPEED, GetComponent<Rigidbody2D>().velocity.y);
+            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            GetComponent<Rigidbody2D>().velocity = toMove;
+        }
+        else
+        {
+            faceDir = FACE_RIGHT;
 
-            }
-            if ((faceDir == FACE_RIGHT) && transform.position.x <= right_end_pos)
-            {
-                anim.SetInteger("speed", (int)currSpeed);
-                toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
-                transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
-                GetComponent<Rigidbody2D>().velocity = toMove;
-            }
-            else
-                faceDir = FACE_LEFT;
+        }
+        if ((faceDir == FACE_RIGHT) && transform.position.x <= right_end_pos)
+        {
+            anim.SetInteger("speed", SLOW_SPEED);
+            toMove = new Vector2(SLOW_SPEED, GetComponent<Rigidbody2D>().velocity.y);
+            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            GetComponent<Rigidbody2D>().velocity = toMove;
+        }
+        else
+            faceDir = FACE_LEFT;
+
+        return true;
     }
 
     private bool isGrounded()
@@ -237,5 +243,10 @@ public class Enemy_Movement : MonoBehaviour
                 isRunAway = false;
             }
         }
+    }
+
+    public void stop_Mov()
+    {
+        anim.SetInteger("speed",0);
     }
 }
