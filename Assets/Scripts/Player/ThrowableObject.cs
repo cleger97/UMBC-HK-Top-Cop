@@ -19,6 +19,8 @@ public class ThrowableObject : MonoBehaviour {
 
     private State currentState;
 
+    private Player player;
+
     private void Start()
     {
         currentState = State.Object;
@@ -33,6 +35,8 @@ public class ThrowableObject : MonoBehaviour {
 
     public void Attach(Transform parent)
     {
+        currentState = State.Carry;
+
         this.parent = parent;
         transform.parent = parent;
         transform.localPosition = new Vector2(0, 0);
@@ -43,7 +47,6 @@ public class ThrowableObject : MonoBehaviour {
         bx2D.enabled = false;
 
         transform.rotation = Quaternion.identity;
-
         rb2D.velocity = Vector2.zero;
     }
 
@@ -88,6 +91,7 @@ public class ThrowableObject : MonoBehaviour {
         Debug.Log("Collision entered");
         if (collision.gameObject.layer == 8)
         {
+            currentState = State.Object;
             if (transform.rotation != Quaternion.identity)
             {
                 transform.rotation = Quaternion.identity;
@@ -97,6 +101,8 @@ public class ThrowableObject : MonoBehaviour {
             rb2D.velocity = Vector2.zero;
             rb2D.angularVelocity = 0f;
             rb2D.bodyType = RigidbodyType2D.Kinematic;
+
+            
         }
 
         switch (currentState)
@@ -111,6 +117,7 @@ public class ThrowableObject : MonoBehaviour {
                     if (collision.transform.tag == "Enemy")
                     {
                         collision.gameObject.GetComponent<Enemy>().takeDamage(damage);
+                        Destroy(this.gameObject);
                     }
                     break;
                 }
@@ -119,13 +126,32 @@ public class ThrowableObject : MonoBehaviour {
             default:
                 break;
         }
-       
     }
 
-    public void OnCollisionExit2D(Collision2D collision)
+    public void OnTriggerEnter2D(Collider2D other)
     {
-        //Debug.Log("Exited collision");
+        Debug.Log("Trigger entered");
+        Debug.Log(currentState);
+        if (currentState != State.Carry)
+        {
+            if (other.tag == "Player")
+            {
+                Debug.Log("Updating");
+                player = other.GetComponent<Player>();
+                other.GetComponent<Player>().SetCollidedObject(this.transform);
+               
+            }
+        }
     }
+
+    public void OnTriggerExit2D(Collider2D collision)
+    {
+        Debug.Log("Trigger exited");
+        player.SetCollidedObject(null);
+
+    }
+
+
 }
 
 

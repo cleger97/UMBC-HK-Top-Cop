@@ -562,6 +562,11 @@ public class Player : MonoBehaviour {
         isCarrying = false;
     }
 
+    public void SetCollidedObject(Transform obj)
+    {
+        collidedObject = obj;
+    }
+
 	// Get hit: damage and knockback value
 	// Adds it to the damage list, to be calculated
 	public void GetHit(int damage,int direction) {
@@ -681,22 +686,22 @@ public class Player : MonoBehaviour {
 
         //Debug.Log(collision.contacts[0].normal);
 
-        if (collision.gameObject.layer == ObjectLayer)
-        {
+        //if (collision.gameObject.layer == ObjectLayer)
+        //{
             //Debug.Log("Object Collision - Updated");
-            collidedObject = collision.transform;
+        //   collidedObject = collision.transform;
             //Debug.Log(collision.gameObject);
-        }
+        //}
         
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         //Debug.Log("Collision exit");
-        if (collidedObject == collision.transform)
-        {
+        //if (collidedObject == collision.transform)
+        //{
            // Debug.Log("Object Collision - Updated");
-            collidedObject = null;
-        }
+        //    collidedObject = null;
+        //}
     }
 }
