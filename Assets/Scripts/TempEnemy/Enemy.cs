@@ -11,11 +11,16 @@ public abstract class Enemy : MonoBehaviour {
 	public static GameObject enemyPrototype;
 	public static GameObject healthPrototype;
 
-	private static Vector3 hpPos = new Vector3 (0f, 0.7f, 0f);
+    public static GameObject bossPrototype;
+    public static GameObject bossHealthPro;
+
+
+
+    private static Vector3 hpPos = new Vector3 (0f, 0.7f, 0f);
 	private static Vector2 hpSize = new Vector2 (0.5f, 0.25f);
 
 	protected GameObject healthBar = null;
-    int health;
+    public int health;
     protected static int num_enemy_alive = 0;
 
 	public static GameObject enemyContainer;
@@ -78,8 +83,24 @@ public abstract class Enemy : MonoBehaviour {
 
 		return toSpawn.GetComponent<Enemy> ();
 	}
+    public static void InstantiateBoss(Vector3 position)
+    {
+        Debug.Log("Before...");
+        bossPrototype = Resources.Load("Prefabs/BigBoss") as GameObject;
+        bossHealthPro = Resources.Load("Prefabs/BossHealth") as GameObject;
 
-	public void SetHealthBar (float currHealth, float maxHealth)
+        GameObject toSpawn = Instantiate(bossPrototype, position, Quaternion.identity);
+        GameObject healthBar = Instantiate(bossHealthPro, hpPos, Quaternion.identity, toSpawn.transform);
+        healthBar.GetComponent<RectTransform>().sizeDelta = hpSize;
+        healthBar.GetComponent<RectTransform>().localPosition = hpPos;
+        toSpawn.GetComponent<Enemy>().AlignHealthBar(healthBar.transform.GetChild(4).gameObject);
+
+
+
+
+    }
+
+    public void SetHealthBar (float currHealth, float maxHealth)
 	{
 		if (healthBar == null) {
 			return;

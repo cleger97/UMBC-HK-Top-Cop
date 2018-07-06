@@ -43,19 +43,20 @@ public class SceneTwoObjective : MonoBehaviour {
 		Time.timeScale = 0;
 	}
 
-	void OnGUI() {
-		if (delay == 0) {
-			if (Input.GetButtonDown ("Fire1")) {
-				imageObj.SetActive (false);
-				textObj.SetActive (false);
-				text2obj.SetActive (false);
-				Time.timeScale = 1;
-			}
-		}
-	}
 
 	void Update() {
-		if (delay > 0) {
+        if (delay == 0)
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                imageObj.SetActive(false);
+                textObj.SetActive(false);
+                text2obj.SetActive(false);
+                Time.timeScale = 1;
+            }
+        }
+
+        else if (delay > 0) {
 			delay -= Time.unscaledDeltaTime;
 			if (delay < 0) {
 				delay = 0;

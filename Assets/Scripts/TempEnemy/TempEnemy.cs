@@ -67,10 +67,12 @@ public class TempEnemy: Enemy
 		} else {
 			//anim.ResetTrigger("Attack");
 			anim.SetBool ("Attack", false);
-             
-			if (timer > 0)
-				timer -= Time.deltaTime;
-				return;
+
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+                return;
+            }
 
 			GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (detectionCircleRadius, transform));
 			if (check.Length > 0) {

@@ -64,7 +64,7 @@ public class NewEnemy : Enemy {
 	// Update is called once per frame
 	void Update () {
 		// if paused don't do anything
-		if (MenuUIHandle.instance.paused == true) {
+		if (MenuUIHandle.instance != null && MenuUIHandle.instance.paused == true) {
 			return;
 		}
 		// if player dead then remove this object
@@ -89,7 +89,7 @@ public class NewEnemy : Enemy {
 			return;
 		}
 
-		Debug.Log (currentState);
+		//Debug.Log (currentState);
 
 		// if not stunned then do something with it's current state
 		switch (currentState) {
@@ -180,7 +180,7 @@ public class NewEnemy : Enemy {
 
             anim.SetInteger("speed", (int)moveSpeed - 1);
             toMove = new Vector2(-1, GetComponent<Rigidbody2D>().velocity.y);
-            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             GetComponent<Rigidbody2D>().velocity = toMove;
         }
         else
@@ -192,7 +192,7 @@ public class NewEnemy : Enemy {
         {
             anim.SetInteger("speed", (int)moveSpeed - 1);
             toMove = new Vector2(1, GetComponent<Rigidbody2D>().velocity.y);
-            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             GetComponent<Rigidbody2D>().velocity = toMove;
         }
         else

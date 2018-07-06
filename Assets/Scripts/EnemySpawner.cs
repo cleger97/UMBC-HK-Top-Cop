@@ -32,38 +32,43 @@ public class EnemySpawner : MonoBehaviour
             enemyData = foundEnemy.GetComponent<Enemy>();
         }
         InvokeRepeating("Spawn", startSpawn, repeatRate);
+
     }
 
     // Update is called once per frame
     void Spawn()
     {
+
+
         if (playerData.IsPlayerAlive() == false)
         {
             return;
         }
-        //Only start spawning when there is only 1/3 of enemies left.
 
-        //if (Enemy.return_num_enemy() <= numToSpawn / 3)
-        //{
-            //Debug.Log("Num_enemy = " + Enemy.return_num_enemy() + "curr spawn rate = " + numToSpawn);
-			Debug.Log(Enemy.return_num_enemy());
-            if (Enemy.return_num_enemy() <= numToSpawn)
+        if (numWaves == 1)
+        {
+
+            int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+            Enemy.InstantiateBoss(spawnPoints[spawnPointIndex].position);
+        }
+
+
+        if (Enemy.return_num_enemy() <= numToSpawn)
+        {
+            int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+		    Enemy spawned = Enemy.InstantiateNew (spawnPoints [spawnPointIndex].position);
+            if (enemyData == null)
             {
-                // Debug.Log("Num_enemy = " + enemyData.return_num_enemy() + "curr spawn rate = " + numToSpawn);
-
-                
-                int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-				Enemy spawned = Enemy.InstantiateNew (spawnPoints [spawnPointIndex].position);
-                if (enemyData == null)
-                {
-					enemyData = spawned;
-                }
-                numWaves++;
-				repeatRate = spawnRate * ObjectiveScript.instance.GetPercentRemaining();
+                enemyData = spawned;
             }
-            else
-                repeatRate = checkRate;
+            numWaves++;
+		    repeatRate = spawnRate * ObjectiveScript.instance.GetPercentRemaining();
+        }
+        else
+            repeatRate = checkRate;
 
-        //}
+        
+
+
     }
 }
