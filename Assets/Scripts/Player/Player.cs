@@ -16,7 +16,7 @@ public class Player : MonoBehaviour {
     private const int ObjectLayer = 13;
 	// state conditions
 	// depending on the state, do something
-	private enum State { ATTACK, BLOCK, MOVE, IDLE, JUMP }
+	private enum State { ATTACK, BLOCK, MOVE, IDLE, JUMP, CROUCH }
 	private State currentState;
 
 	// keybinds
@@ -189,29 +189,41 @@ public class Player : MonoBehaviour {
 		int horizInput = (int) Input.GetAxisRaw("Horizontal");
 		int vertInput = (int) Input.GetAxisRaw("Vertical");
 
-		if (horizInput != 0) {
-			// can only move if not blocking
-			if (!states.Contains(State.BLOCK) || states.Count == 0) {
-				states.Add (State.MOVE);
+        if (horizInput != 0)
+        {
+            // can only move if not blocking
+            if (!states.Contains(State.BLOCK) || states.Count == 0)
+            {
+                states.Add(State.MOVE);
 
-			}
-			if (horizInput != faceDirection) {
-				//Debug.Log (horizInput);
-				//Debug.Log (faceDirection);
-				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-				faceDirection = faceDirection * -1;
-			}
-		}
+            }
+            if (horizInput != faceDirection)
+            {
+                //Debug.Log (horizInput);
+                //Debug.Log (faceDirection);
+                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                faceDirection = faceDirection * -1;
+            }
+        }
+
+        UpdateCrouch(vertInput);
+        if (vertInput < 0)
+        {
+            if (isGrounded) { states.Add(State.CROUCH); }          
+        }
 
 		if (Input.GetButtonDown ("Jump") || Input.GetKeyDown (keybinds.jumpkey) || vertInput > 0) {
-			states.Add (State.JUMP);
+            if (!states.Contains(State.CROUCH))
+            {
+                states.Add(State.JUMP);
+            } 
 		}
 
 		if (states.Contains (State.JUMP) && isGrounded) {
 			Jump ();
 		}
 
-		if (states.Contains (State.MOVE)) {
+		if (states.Contains (State.MOVE) && !states.Contains(State.CROUCH)) {
 			Move ();
 
 		} else {
@@ -365,6 +377,9 @@ public class Player : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+        UpdateCrouch((int)Input.GetAxisRaw("Vertical"));
+
         // Get the input data
         if (Input.GetKey(keybinds.blockKey) || Input.GetButton("Fire2"))
         {
@@ -496,6 +511,17 @@ public class Player : MonoBehaviour {
 		rb2D.velocity = newVel;
 
 	}
+
+    void UpdateCrouch(int input)
+    {
+        if (input < 0)
+        {
+            anim.SetBool("isCrouching", true);
+        } else
+        {
+            anim.SetBool("isCrouching", false);
+        }
+    }
 
 	void Jump() {
 		anim.SetBool ("idle", false);

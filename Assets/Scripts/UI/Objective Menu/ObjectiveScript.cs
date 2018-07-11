@@ -30,7 +30,10 @@ public class ObjectiveScript : MonoBehaviour {
     // goal vars
     private int killGoal;
 	private int timeGoal;
-    // finish doesn't really need one (yet)
+
+    // finish vars
+    private string finishText;
+    private string finishObjective;
 
 	private bool isVictory = false;
 
@@ -75,8 +78,7 @@ public class ObjectiveScript : MonoBehaviour {
 
 			progressText.text = "Time Left: " + minutes.ToString("D2") + ":" + seconds.ToString("D2");
 		} else {
-			levelManager.NextLevel ();
-			currentGoal = (int) TypeOfGoal.None;
+            GotoNext();
 		}
 
 	}
@@ -101,6 +103,7 @@ public class ObjectiveScript : MonoBehaviour {
 		}
 	}
 
+    // set goal for numerical endings
     public void SetGoalType(int type, int goal)
     {
         currentGoal = type;
@@ -108,6 +111,9 @@ public class ObjectiveScript : MonoBehaviour {
         timeLeft = 0;
         didFinish = false;
 		isVictory = false;
+
+        ActivateObjects();
+
         switch (type)
         {
             case 0:
@@ -128,9 +134,51 @@ public class ObjectiveScript : MonoBehaviour {
                     break;
                 }
             case 2:
+                Debug.LogWarning("Attempted to assign a finish goal with a count");
+                break;
             default:
                 break;
         }
+    }
+
+    private void GotoNext()
+    {
+        currentGoal = (int)TypeOfGoal.None;
+        levelManager.NextLevel();
+        
+    }
+
+    // set goal for finish - goal text
+    public void SetGoalType(int type, string text1)
+    {
+        // Progress Text - Child # of Objective Canvas
+        int progText = 0;
+
+        currentGoal = type;
+        killCount = 0;
+        timeLeft = 0;
+        didFinish = false;
+        isVictory = false;
+
+        ActivateObjects();
+
+        transform.GetChild(progText).gameObject.SetActive(false);
+
+        switch (type)
+        {
+            case 0:
+                Debug.LogWarning("Attempted to assign a kill counter without a goal count");
+                break;
+            case 1:
+                Debug.LogWarning("Attempted to assign a timed goal without a time");
+                break;
+            case 2:
+                goalText.text = text1;
+                break;
+            default:
+                break;
+        }
+
     }
 	
     public void UpdateKillCount(int howMany)
@@ -148,11 +196,21 @@ public class ObjectiveScript : MonoBehaviour {
 
         if (killCount >= killGoal && !isVictory)
         {
-			levelManager.NextLevel ();
-			currentGoal = (int) TypeOfGoal.None;
+            GotoNext();
             // victory or whatever goes here
             // TODO: implement victory
         }
+    }
+
+    public void ActivateFinish()
+    {
+        if (currentGoal != 2)
+        {
+            Debug.LogWarning("Attempted to manually finish a level without the 'Finish' tag.");
+            return;
+        }
+
+        GotoNext();
     }
 
 	public void Defeat() {

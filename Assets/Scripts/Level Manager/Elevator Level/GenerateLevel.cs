@@ -36,7 +36,7 @@ public class GenerateLevel : ScriptableObject {
 			Debug.Log (assets);
 		}
 
-		Object elevatorPrototype =  AssetDatabase.LoadAssetAtPath<Object> ("Assets/Prefabs/Elevator.prefab");
+		Object elevatorPrototype =  AssetDatabase.LoadAssetAtPath<Object> ("Assets/Resources/Prefabs/Elevator.prefab");
 
 		int elevTileSqSize = 128;
 

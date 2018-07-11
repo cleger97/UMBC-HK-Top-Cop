@@ -39,7 +39,7 @@ public class SceneThreeObjective : MonoBehaviour {
     void Start () {
         if (objectiveHandler != null)
         {
-            //objectiveHandler.SetGoalType(1, 90);
+            objectiveHandler.SetGoalType(2, "Defeat the Boss");
         }
 
         imageObj.SetActive(true);
