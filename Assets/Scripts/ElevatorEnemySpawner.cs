@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Note: This class (and LobbyEnemySpawner) can be re-created to be child classes of a
+// well built EnemySpawner class.
 public class ElevatorEnemySpawner : MonoBehaviour {
 
 

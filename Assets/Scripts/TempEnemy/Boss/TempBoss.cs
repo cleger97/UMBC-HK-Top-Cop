@@ -26,6 +26,8 @@ public class TempBoss : Enemy {
     private Boss_attack attackData;
     private GameObject player;
     private Player playerData;
+
+    private BossFinish bossFinish;
     
     public override string returnName()
     {
@@ -42,6 +44,8 @@ public class TempBoss : Enemy {
         player = GameObject.FindGameObjectWithTag("Player");
         playerData = player.GetComponent<Player>();
         attackData = GetComponent<Boss_attack>();
+
+        bossFinish = gameObject.GetComponent<BossFinish>();
 
         
         currentState = bossState.IDLE;
@@ -160,6 +164,12 @@ public class TempBoss : Enemy {
         GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         //playerData.updateKill();
         this.enabled = false;
+
+        if (bossFinish != null)
+        {
+            bossFinish.FinishGame();
+        }
+
         Destroy(gameObject, 0.25f);
     }
 

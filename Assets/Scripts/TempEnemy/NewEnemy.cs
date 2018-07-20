@@ -8,6 +8,7 @@ public class NewEnemy : Enemy {
 	private enum EnemyState { STUNNED, ATTACK, MOVE, IDLE }
 	private EnemyState currentState;
 
+    public bool idleEnabled = false;
 
 	public float maxHealth = 50f;
 	public float currHealth = 50f;
@@ -22,8 +23,8 @@ public class NewEnemy : Enemy {
 	GameObject player;
 	Player playerData;
 	private float stunTime;
-	private const float baseStunTime = 0.25f;
-	private const float attackSwingTime = 0.6f;
+	private const float baseStunTime = 0.1f;
+	private const float attackSwingTime = 1f;
 
 	private float attackSwingCurrentTime;
 
@@ -59,6 +60,7 @@ public class NewEnemy : Enemy {
 		right_end_pos = transform.position.x + length;
 
 		currentState = EnemyState.MOVE;
+        idleEnabled = false;
 	}
 	
 	// Update is called once per frame
@@ -108,43 +110,64 @@ public class NewEnemy : Enemy {
 
 	}
 
+    public void SetIdleState(bool state)
+    {
+        idleEnabled = state;
+        if (state == false)
+        {
+            currentState = EnemyState.MOVE;
+        }
+        
+    }
+
 	public void ChasePlayer() {
-		anim.SetBool ("Attack", false);
 		GameObject[] check = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, transform));
         if (check.Length > 0) {
-            attackSwingCurrentTime = attackSwingTime;
+            // initial swing should have ~0.3 second windup
+            attackSwingCurrentTime = 0.3f;
             currentState = EnemyState.ATTACK;
 
             return;
         } else {
-
-            if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength)
+            // If idling isn't enabled then we don't check for the position before we go into the chase.
+            if (idleEnabled)
             {
-                Vector2 toMove;
-                if (player.transform.position.x > transform.position.x)
+                if (Mathf.Abs(player.transform.position.x - transform.position.x) <= DetLength)
                 {
-                    faceDir = FACE_RIGHT;
-                    anim.SetInteger("speed", (int)moveSpeed);
-                    toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-                    transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                    ApplyChase();
                 }
                 else
                 {
-                    faceDir = FACE_LEFT;
-                    anim.SetInteger("speed", (int)moveSpeed);
-                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-                    toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                    currentState = EnemyState.IDLE;
                 }
-                GetComponent<Rigidbody2D>().velocity = toMove;
-                left_end_pos = transform.position.x - length;
-                right_end_pos = transform.position.x + length;
-            }
-            else
+            } else
             {
-                currentState = EnemyState.IDLE;
+                ApplyChase();
             }
 		}
 	}
+
+    private void ApplyChase()
+    {
+        Vector2 toMove;
+        if (player.transform.position.x > transform.position.x)
+        {
+            faceDir = FACE_RIGHT;
+            anim.SetInteger("speed", (int)moveSpeed);
+            toMove = new Vector2(moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+            transform.localScale = new Vector3(-1 * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+        else
+        {
+            faceDir = FACE_LEFT;
+            anim.SetInteger("speed", (int)moveSpeed);
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            toMove = new Vector2(-moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+        }
+        GetComponent<Rigidbody2D>().velocity = toMove;
+        left_end_pos = transform.position.x - length;
+        right_end_pos = transform.position.x + length;
+    }
 
 	public void AttackPlayer() {
 		GameObject[] checkInAttack = colliderTagSorter ("Player", Enemy.getAllAround (attackCircleRadius, dmgArea));
@@ -156,7 +179,7 @@ public class NewEnemy : Enemy {
 			if (attackSwingCurrentTime > 0) {
 				attackSwingCurrentTime -= Time.deltaTime;
 				if (attackSwingCurrentTime < 0.3f) {
-					anim.SetBool ("Attack", true);
+                    anim.SetTrigger("Attack");
 				}
 				if (attackSwingCurrentTime < 0) {
 					attackSwingCurrentTime = 0;
@@ -168,7 +191,8 @@ public class NewEnemy : Enemy {
 			int direction = (int) Mathf.Sign (distance);
 			player.GetComponent<Player> ().GetHit ((int)damage,direction);
 			attackSwingCurrentTime = attackSwingTime;
-			anim.SetBool ("Attack", false);
+            anim.ResetTrigger("Attack");
+			
 		}
 	}
 
@@ -217,8 +241,8 @@ public class NewEnemy : Enemy {
 		}
 
 		// Apply hitstun
-		stunTime = (stunTime > baseStunTime) ? stunTime : baseStunTime;
-		currentState = EnemyState.STUNNED;
+		// stunTime = (stunTime > baseStunTime) ? stunTime : baseStunTime;
+		// currentState = EnemyState.STUNNED;
 	}
 
 	public override string returnName()

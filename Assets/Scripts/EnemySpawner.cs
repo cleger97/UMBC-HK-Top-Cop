@@ -45,13 +45,6 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        if (numWaves == 1)
-        {
-
-            int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-            Enemy.InstantiateBoss(spawnPoints[spawnPointIndex].position);
-        }
-
 
         if (Enemy.return_num_enemy() <= numToSpawn)
         {

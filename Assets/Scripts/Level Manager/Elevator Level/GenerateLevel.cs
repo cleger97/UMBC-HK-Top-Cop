@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class GenerateLevel : ScriptableObject {
 
-	[MenuItem("Tools/Generate Elevator Level")]
+	[MenuItem("Tools/Elevator/Generate Elevator Level")]
 	public static void GenerateElevatorLevel() {
 		GameObject elevatorContainer = GameObject.Find ("Elevator Container");
 		GameObject backgroundContainer = GameObject.Find ("Background Container");
@@ -72,7 +72,7 @@ public class GenerateLevel : ScriptableObject {
 		}
 	}
 
-	[MenuItem("Tools/Clear Elevator Assets")]
+	[MenuItem("Tools/Elevator/Clear Elevator Assets")]
 	public static void ClearElevatorAssets() {
 		GameObject elevatorContainer = GameObject.Find ("Elevator Container");
 		Transform container = elevatorContainer.transform;
@@ -85,7 +85,7 @@ public class GenerateLevel : ScriptableObject {
 
 	}
 
-	[MenuItem("Tools/Cleanup Elevator")] 
+	[MenuItem("Tools/Elevator/Cleanup Elevator")] 
 	public static void CleanupElevator() {
 		
 		GameObject elevatorContainer = GameObject.Find ("Elevator Container");
@@ -99,7 +99,7 @@ public class GenerateLevel : ScriptableObject {
 	}
 		
 
-	[MenuItem("Tools/Generate Girders")] 
+	[MenuItem("Tools/Elevator/Generate Girders")] 
 	public static void GenerateElevatorGirders() {
 		GameObject backgroundContainer = GameObject.Find ("Background Container");
 		Transform container = backgroundContainer.transform;
@@ -148,7 +148,7 @@ public class GenerateLevel : ScriptableObject {
 
 	}
 
-	[MenuItem("Tools/Clear Girder Assets")]
+	[MenuItem("Tools/Elevator/Clear Girder Assets")]
 	public static void ClearGirderAssets() {
 		GameObject backgroundContainer = GameObject.Find ("Background Container");
 		Transform container = backgroundContainer.transform;
@@ -161,7 +161,7 @@ public class GenerateLevel : ScriptableObject {
 
 	}
 
-	[MenuItem("Tools/Count Elevator Tiles")]
+	[MenuItem("Tools/Elevator/Count Elevator Tiles")]
 	public static void DisplayTiles() {
 		GameObject elevatorContainer = GameObject.Find ("Elevator Container");
 		Transform container = elevatorContainer.transform;
@@ -170,7 +170,7 @@ public class GenerateLevel : ScriptableObject {
 		Debug.Log (container.childCount);
 	}
 
-	[MenuItem("Tools/Generate Flooring")] 
+	[MenuItem("Tools/Elevator/Generate Flooring")] 
 	public static void GenerateFlooring() {
 
 		GameObject floorContainer = GameObject.Find ("Wall Container");
@@ -193,7 +193,7 @@ public class GenerateLevel : ScriptableObject {
 		}
 	}
 
-	[MenuItem("Tools/Clear Floor Assets")]
+	[MenuItem("Tools/Elevator/Clear Floor Assets")]
 	public static void ClearFloorAssets() {
 		GameObject backgroundContainer = GameObject.Find ("Wall Container");
 		Transform container = backgroundContainer.transform;

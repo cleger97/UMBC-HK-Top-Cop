@@ -41,7 +41,7 @@ public class Boss_Data : MonoBehaviour{
         currHealthLayer = healthBar.transform.GetChild(TOP_LAYERH).gameObject;
         currLayerH = TOP_LAYERH;
 
-        defColor = GetComponent<SpriteRenderer>().material.GetColor("_Color");
+        //defColor = GetComponent<SpriteRenderer>().material.GetColor("_Color");
         inCombatTimer = 0f;
         lowHealth = false;
         underAttack = false;
@@ -58,7 +58,7 @@ public class Boss_Data : MonoBehaviour{
             timeRed -= Time.deltaTime;
         }
         else
-            GetComponent<SpriteRenderer>().material.SetColor("_Color", defColor);
+            GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.white);
 
         if (inCombatTimer > 0)
         {
@@ -81,7 +81,7 @@ public class Boss_Data : MonoBehaviour{
 
     public bool isAlive()
     {
-        return isDead;
+        return (isDead == false);
     }
 
     public float eneTakeDamage(int damage)

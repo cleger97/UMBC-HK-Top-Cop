@@ -47,8 +47,10 @@ public class Player : MonoBehaviour {
 	public float damageRadius = 0.5f; 
 	public Transform dmgArea;
 
-	private float attackCD = 0;
-	private float animTimer = 0;
+	private float baseAttackCD = PlayerAnimationData.PlayerPunchTime * (4/5);
+    public float attackCD = 0;
+    private float animTimer = 0;
+    private float timeSinceLastAttack = 0f;
 
 	// Combo counter
     // "Shoryuken"
@@ -170,17 +172,11 @@ public class Player : MonoBehaviour {
 		}
 
 		if (states.Contains (State.ATTACK)) {
-			// the principle of combos come from canceling backswing - if the player attacks at this time, they should be able to hit again.
-			float minAttackTime = 20 * AVG_FRAME_TIME;
-			float baseAttackCooldown = 30 * AVG_FRAME_TIME;
-			//Debug.Log ( (int) (attackCD / AVG_FRAME_TIME));
-			if (attackCD <= minAttackTime) {
-				//Debug.Log (currentHits);
-				Attack ();
-				attackCD = baseAttackCooldown;
-			}
-
-		}
+            Attack();
+		} else
+        {
+            timeSinceLastAttack += Time.deltaTime;
+        }
 
 		if (states.Count == 0) { 
 			ResetAnimations ();
@@ -241,8 +237,7 @@ public class Player : MonoBehaviour {
 			//Debug.Log (attackCD);
 			attackCD -= Time.deltaTime;
 			if (attackCD < 0) {
-				attackCD = 0;
-				currentHits = 0;
+                attackCD = 0;
 			}
 		}
 			
@@ -287,7 +282,6 @@ public class Player : MonoBehaviour {
 		if (!isBlocking && (leftTotalDamage > 0|| rightTotalDamage > 0)) {
 			totalDamage = leftTotalDamage + rightTotalDamage;
 			currentHealth -= totalDamage;
-			UpdateHealth (totalDamage);
 		}
 
 		else if (isBlocking){
@@ -337,9 +331,8 @@ public class Player : MonoBehaviour {
                 }
 			}
             currentHealth -= totalDamage;
-			UpdateHealth(totalDamage);
-
 		}
+        UpdateHealth(totalDamage);
 
         if (totalDamage > 0 && isCarrying)
         {
@@ -428,17 +421,22 @@ public class Player : MonoBehaviour {
 	// Preconditions: The attack is off cooldown. (attackCD < minAttackTime) 
 	// Postcondition: Attacks.
 	void Attack() {
-		
-		if (attackCD > 0) {
+        
+        if (timeSinceLastAttack > 0.5f)
+        {
+            currentHits = 0;
+        } else if (attackCD == 0) {
 			currentHits++;
 
 			if (currentHits > MAX_COMBO) {
 				currentHits = 0;
 			}
 
-		} else {
-			currentHits = 0;
-		}
+		} else
+        {
+            return;
+        }
+
 			
 		//Debug.Log (currentHits);
 
@@ -452,8 +450,6 @@ public class Player : MonoBehaviour {
 		anim.SetInteger ("combo", currentHits);
 
 		GameObject[] checkInAttack = colliderTagSorter ("Enemy", getAllAround (damageRadius, dmgArea));
-
-		anim.speed = 1f;
 
 		for (int i = 0; i < checkInAttack.Length; i++) {
             
@@ -472,12 +468,12 @@ public class Player : MonoBehaviour {
                 // Check for attack cooldown
                 // animation timer should be set somewhere to make sure attacks hit at the same time
 
-				enemyScript.takeDamage (baseDamage);
-				animTimer = attackCD;
-
+                enemyScript.takeDamage(baseDamage);
 
 			}    
 		}
+        attackCD = baseAttackCD;
+        timeSinceLastAttack = 0f;
 
 	}
 
@@ -486,7 +482,7 @@ public class Player : MonoBehaviour {
 		// set the animator speed for the movement
 		int anim_speed = Mathf.Abs((int)Input.GetAxisRaw("Horizontal"));
 		anim.SetInteger("anim_speed", anim_speed);
-		anim.speed = (float) anim_speed;
+		//anim.speed = (float) anim_speed;
 
 		// handle the actual movement
 	
@@ -566,9 +562,16 @@ public class Player : MonoBehaviour {
             return;
         }
         carriedObject = objToGrab;
-        objToGrab.Attach(this.transform.GetChild(ThrowableObjectSpot));
+
+        Transform throwableSpot = this.transform.GetChild(ThrowableObjectSpot);
+
+        objToGrab.Attach(throwableSpot);
+
+        float offset = collidedObject.gameObject.GetComponent<Collider2D>().bounds.size.x + this.gameObject.GetComponent<Collider2D>().bounds.size.x;
+        throwableSpot.localPosition = new Vector2(offset, 0);
 
         isCarrying = true;
+        anim.SetBool("isHolding", true);
         return;
     }
 
@@ -577,6 +580,7 @@ public class Player : MonoBehaviour {
         carriedObject.Throw(direction, initial);
         carriedObject = null;
 
+        anim.SetBool("isHolding", false);
         isCarrying = false;
     }
 
@@ -585,6 +589,7 @@ public class Player : MonoBehaviour {
         carriedObject.Drop((int)Mathf.Sign(direction));
         carriedObject = null;
 
+        anim.SetBool("isHolding", false);
         isCarrying = false;
     }
 
@@ -616,11 +621,11 @@ public class Player : MonoBehaviour {
 		
 		if (totalDamage > 0) {
 			rend.color = Color.red;
-		}
-
+            isRed = true;
+            timeRed = 1f;
+        } 
 		// five frames to fix red
-		isRed = true;
-		timeRed = 1f;
+		
 
 		if (currentHealth > maxHealth) {
 			currentHealth = maxHealth;

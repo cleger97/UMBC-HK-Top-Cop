@@ -180,6 +180,11 @@ public class ObjectiveScript : MonoBehaviour {
         }
 
     }
+
+    public int GetGoalType()
+    {
+        return (int)currentGoal;
+    }
 	
     public void UpdateKillCount(int howMany)
     {

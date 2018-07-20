@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class ThrowableObject : MonoBehaviour {
 
     private Transform parent = null;
@@ -67,6 +68,8 @@ public class ThrowableObject : MonoBehaviour {
         parent = null;
         transform.parent = null;
 
+        gameObject.layer = 15;
+
         bx2D.enabled = true;
        
 
@@ -91,17 +94,10 @@ public class ThrowableObject : MonoBehaviour {
         Debug.Log("Collision entered");
         if (collision.gameObject.layer == 8)
         {
-            currentState = State.Object;
-            if (transform.rotation != Quaternion.identity)
+            if (gameObject.layer == 15)
             {
-                transform.rotation = Quaternion.identity;
-                return;
+                Destroy(this.gameObject);
             }
-
-            rb2D.velocity = Vector2.zero;
-            rb2D.angularVelocity = 0f;
-            rb2D.bodyType = RigidbodyType2D.Kinematic;
-
             
         }
 
@@ -117,7 +113,6 @@ public class ThrowableObject : MonoBehaviour {
                     if (collision.transform.tag == "Enemy")
                     {
                         collision.gameObject.GetComponent<Enemy>().takeDamage(damage);
-                        Destroy(this.gameObject);
                     }
                     break;
                 }
@@ -134,6 +129,13 @@ public class ThrowableObject : MonoBehaviour {
         Debug.Log(currentState);
         if (currentState != State.Carry)
         {
+            if (currentState == State.Thrown)
+            {
+                if (other.transform.tag == "Enemy")
+                {
+                    other.gameObject.GetComponent<Enemy>().takeDamage(damage);
+                }
+            }
             if (other.tag == "Player")
             {
                 Debug.Log("Updating");
@@ -142,12 +144,19 @@ public class ThrowableObject : MonoBehaviour {
                
             }
         }
+        
+
     }
 
     public void OnTriggerExit2D(Collider2D collision)
     {
         Debug.Log("Trigger exited");
-        player.SetCollidedObject(null);
+
+        if (player != null)
+        {
+            player.SetCollidedObject(null);
+        }
+        
 
     }
 

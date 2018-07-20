@@ -10,10 +10,10 @@ public class TestFrames : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		totalFrames++;
-		totalTime += Time.deltaTime;
-		averageTime = totalTime / totalFrames;
-		string text = "Average frame time is: " + averageTime.ToString ();
+        totalFrames++;
+        totalTime += Time.deltaTime;
+        int averageFPS = (int)(totalFrames / totalTime);
+		string text = "Average FPS is: " + averageFPS.ToString ();
 		Debug.Log (text);
 	}
 }

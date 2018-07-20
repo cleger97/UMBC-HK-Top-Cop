@@ -1030,10 +1030,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 978e0ee17ded4c64f970d03d64471802, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -1605,6 +1605,8 @@ MonoBehaviour:
   imageObj: {fileID: 409120765}
   textObj: {fileID: 1059466939}
   text2obj: {fileID: 1105414605}
+  audio: {fileID: 0}
+  hasStarted: 0
   delay: 1.5
 --- !u!114 &859364957
 MonoBehaviour:
@@ -1864,7 +1866,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1413599886262804, guid: bd45dd909f4d64b44a2f0754eac8c76d, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd45dd909f4d64b44a2f0754eac8c76d, type: 2}
@@ -2322,10 +2324,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'LEVEL 1
+  m_Text: 'Part 1: The City
 
 
-    BEAT 10 ENEMIES'
+    Beat 10 Enemies'
 --- !u!1 &1089136980
 GameObject:
   m_ObjectHideFlags: 0

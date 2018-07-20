@@ -10,10 +10,16 @@ public class SceneTwoObjective : MonoBehaviour {
 	public Text text;
 	public GameObject imageObj, textObj, text2obj;
 
-	public float delay;
+    public AudioSource audio;
+
+    public bool hasStarted = false;
+
+    public float delay;
 
 	void Awake () {
-		GameObject objectiveCanvas = GameObject.Find ("Objective Canvas");
+        audio = GameObject.Find("Music").GetComponent<AudioSource>();
+
+        GameObject objectiveCanvas = GameObject.Find ("Objective Canvas");
 
 		if (objectiveCanvas == null) {
 			objectiveHandler = null;
@@ -36,7 +42,7 @@ public class SceneTwoObjective : MonoBehaviour {
 		textObj.SetActive (true);
 		text2obj.SetActive (false);
 
-		text.text = "SCENE 2\n\nSURVIVE FOR 1:30";
+		text.text = "Part 3: The Elevator\n\nSurvive for 1:30";
 
 		delay = 1.5f;
 
@@ -45,6 +51,8 @@ public class SceneTwoObjective : MonoBehaviour {
 
 
 	void Update() {
+        if (hasStarted) { return; }
+
         if (delay == 0)
         {
             if (Input.GetButtonDown("Fire1"))
@@ -53,6 +61,13 @@ public class SceneTwoObjective : MonoBehaviour {
                 textObj.SetActive(false);
                 text2obj.SetActive(false);
                 Time.timeScale = 1;
+
+                if (audio != null)
+                {
+                    audio.Play();
+                }
+
+                hasStarted = true;
             }
         }
 

@@ -10,10 +10,16 @@ public class SceneOneObjective : MonoBehaviour {
 	public Text text;
 	public GameObject imageObj, textObj, text2obj;
 
-	public float delay;
+    public AudioSource audio;
+
+    public bool hasStarted = false;
+
+    public float delay;
 	// Use this for initialization
 	void Awake () {
-		GameObject objectiveCanvas= GameObject.Find ("Objective Canvas");
+        audio = GameObject.Find("Music").GetComponent<AudioSource>();
+
+        GameObject objectiveCanvas= GameObject.Find ("Objective Canvas");
 		if (objectiveCanvas == null) {
 			Debug.Log ("No Objective Canvas found!");
 			SceneManager.LoadScene ("menu", LoadSceneMode.Single);
@@ -39,19 +45,27 @@ public class SceneOneObjective : MonoBehaviour {
 		Time.timeScale = 0;
 	}
 
-	void OnGUI() {
-		if (delay == 0) {
-			if (Input.GetButtonDown ("Fire1")) {
-				imageObj.SetActive (false);
-				textObj.SetActive (false);
-				text2obj.SetActive (false);
-				Time.timeScale = 1;
-			}
-		}
-	}
-
 	void Update() {
-		if (delay > 0) {
+        if (hasStarted) { return; }
+
+        if (delay == 0)
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                imageObj.SetActive(false);
+                textObj.SetActive(false);
+                text2obj.SetActive(false);
+                Time.timeScale = 1;
+
+                if (audio != null)
+                {
+                    audio.Play();
+                }
+                hasStarted = true;
+            }
+        } else
+
+        if (delay > 0) {
 			delay -= Time.unscaledDeltaTime;
 			if (delay < 0) {
 				delay = 0;

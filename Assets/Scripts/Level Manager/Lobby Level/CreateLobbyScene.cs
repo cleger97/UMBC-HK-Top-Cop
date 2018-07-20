@@ -127,6 +127,8 @@ public class CreateLobbyScene : ScriptableObject {
             DestroyImmediate(t.gameObject);
         }
     }
+
+    
 }
 
 #endif

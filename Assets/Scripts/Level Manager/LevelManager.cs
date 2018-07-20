@@ -9,10 +9,14 @@ public class LevelManager : MonoBehaviour {
 	
 	public static LevelManager instance = null;
 
-	public static string[] levels = { "menu", "Scene 1", "Scene 2", "Scene 3", "Victory" };
+    // live version
+    public static string[] levels = {"menu", "Scene 1", "Lobby", "Scene 2", "Scene 3", "Victory"};
+
+    // experimental version
+	//public static string[] levels = { "menu", "Lobby", "Victory"};
 	public int currentLevel = 0;
 
-	public static int VictoryLevel = 4;
+	public static int VictoryLevel = 2;
 
 
 	ObjectiveScript objectiveHandle;
@@ -45,13 +49,16 @@ public class LevelManager : MonoBehaviour {
 			MenuUIHandle.instance.EnableControls ();
 		}
 
-		if (levels [currentLevel] == "Victory") {
+        if (objectiveHandle.UIShow == false && currentLevel != 0)
+        {
+            objectiveHandle.ActivateObjects();
+        }
+
+        if (levels [currentLevel] == "Victory") {
 			objectiveHandle.Victory ();
 		}
 
-		if (objectiveHandle.UIShow == false && currentLevel != 0) {
-			objectiveHandle.ActivateObjects ();
-		}
+		
 
 	}
 
