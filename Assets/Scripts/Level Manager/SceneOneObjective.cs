@@ -43,6 +43,8 @@ public class SceneOneObjective : MonoBehaviour {
 		delay = 1.5f;
 
 		Time.timeScale = 0;
+
+        Enemy.resetEnemyCount();
 	}
 
 	void Update() {

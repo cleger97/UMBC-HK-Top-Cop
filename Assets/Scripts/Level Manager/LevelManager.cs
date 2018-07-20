@@ -56,9 +56,12 @@ public class LevelManager : MonoBehaviour {
 
         if (levels [currentLevel] == "Victory") {
 			objectiveHandle.Victory ();
-		}
-
-		
+		} else
+        
+        if (currentLevel != 0 && currentLevel != VictoryLevel)
+        {
+            objectiveHandle.UpdatePlayer();
+        }
 
 	}
 

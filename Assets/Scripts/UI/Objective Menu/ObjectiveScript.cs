@@ -37,6 +37,8 @@ public class ObjectiveScript : MonoBehaviour {
 
 	private bool isVictory = false;
 
+    private Player player;
+
 	// UI handle
 	public bool UIShow = false;
 
@@ -90,6 +92,11 @@ public class ObjectiveScript : MonoBehaviour {
 		UIShow = true;
 
 	}
+
+    public void UpdatePlayer()
+    {
+        //player = GameObject.Find("Player").GetComponent<Player>();
+    }
 
 	public float GetPercentRemaining() {
 		switch (currentGoal) {
