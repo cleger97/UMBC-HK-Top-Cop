@@ -7,7 +7,7 @@ public class Boss_Data : MonoBehaviour{
     private const int IS_LOW = 2;
     private const int IS_ALIVE = 3;
     private float regenTimer;
-    private static float max_health = 400f;
+    private static float max_health = 800f;
     private float currHealth;
     private GameObject healthBar;
     private GameObject currHealthLayer;

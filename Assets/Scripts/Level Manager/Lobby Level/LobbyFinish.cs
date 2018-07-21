@@ -6,6 +6,10 @@ using UnityEngine;
 public class LobbyFinish : MonoBehaviour {
 
     ObjectiveScript objScript;
+    GameObject enemySpawners;
+
+    bool part2 = false;
+    bool finished = false;
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +23,28 @@ public class LobbyFinish : MonoBehaviour {
         {
             Debug.LogWarning("Collider attached is not a trigger. Script will not work correctly.");
         }
+
+        enemySpawners = GameObject.Find("Enemy Spawners");
+
+        
 	}
+
+    void Update()
+    {
+        Debug.Log(Enemy.return_num_enemy());
+        if (finished)
+        {
+            return;
+        }
+        if (part2)
+        {
+            if (Enemy.return_num_enemy() == 0)
+            {
+                objScript.ActivateFinish();
+                finished = true;
+            }
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -34,7 +59,13 @@ public class LobbyFinish : MonoBehaviour {
             return;
         }
 
-        objScript.ActivateFinish();
+        objScript.SetGoalType(2, "Clear out the Lobby");
+        
+        enemySpawners.SetActive(false);
+
+        part2 = true;
+
+        Enemy.resetEnemyCount();
     }
 
 
