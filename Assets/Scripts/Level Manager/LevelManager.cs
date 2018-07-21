@@ -16,10 +16,9 @@ public class LevelManager : MonoBehaviour {
     //public static string[] levels = { "menu", "Scene 3", "Victory"};
 	public int currentLevel = 0;
 
-	public static int VictoryLevel = 2;
+	public static int VictoryLevel = 5;
 
-
-	ObjectiveScript objectiveHandle;
+	public ObjectiveScript objectiveHandle;
 
 	// Use this for initialization
 	void Awake () {
@@ -32,23 +31,28 @@ public class LevelManager : MonoBehaviour {
 		// Otherwise, Level Managers shouldn't be destroyed on load.
 		DontDestroyOnLoad(this);
 
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
 	}
 
 	void Start() {
 		objectiveHandle = ObjectiveScript.instance;
 	}
 
-	// Level Manager shouldn't need to update
-	// Call each function it needs accordingly
 
-	private void DoWhenUpdateLevel() {
+    // Level Manager shouldn't need to update
+    // Call each function it needs accordingly
+
+    private void DoWhenUpdateLevel() {
+
 		Enemy.resetEnemyCount ();
+
 		if (currentLevel != 0) {
 			MenuUIHandle.instance.DisableControls ();
 		} else {
 			MenuUIHandle.instance.EnableControls ();
 		}
-
+        Debug.Log(objectiveHandle);
         if (objectiveHandle.UIShow == false && currentLevel != 0)
         {
             objectiveHandle.ActivateObjects();
@@ -58,16 +62,24 @@ public class LevelManager : MonoBehaviour {
 			objectiveHandle.Victory ();
 		}
 
-		
-
+        if (currentLevel != 0 && currentLevel != VictoryLevel)
+        {
+            Debug.Log(SceneManager.GetActiveScene().name);
+            objectiveHandle.UpdatePlayer();
+        }
 	}
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == levels[0] || scene.name == levels[VictoryLevel]) { return; }
+        DoWhenUpdateLevel();
+    }
 
 	// use this when manually changing level
 	public void UpdateLevel(int level) {
 		
 		currentLevel = level;
-		DoWhenUpdateLevel ();
-	}
+    }
 
 	public void NextLevel() {
 		currentLevel++;
@@ -77,15 +89,17 @@ public class LevelManager : MonoBehaviour {
 		} else {
 			SceneManager.LoadScene (levels [currentLevel], LoadSceneMode.Single);
 		}
-
-		DoWhenUpdateLevel ();
 	}
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(levels[currentLevel], LoadSceneMode.Single);
+    }
 
 	public void LoadSpecificLevel(int level) {
 		currentLevel = level;
 		SceneManager.LoadScene (levels [level], LoadSceneMode.Single);
-		DoWhenUpdateLevel ();
-	}
+    }
 
 	public void LoadSpecificLevel(string level) {
 		int oldLevel = currentLevel;
@@ -100,7 +114,6 @@ public class LevelManager : MonoBehaviour {
 			SceneManager.LoadScene(levels[currentLevel], LoadSceneMode.Single);
 		}
 
-		DoWhenUpdateLevel ();
-	}
+    }
 
 }

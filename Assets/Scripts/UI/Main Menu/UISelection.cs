@@ -22,9 +22,19 @@ public class UISelection : MonoBehaviour {
 	private int verticalInput;
 
 	void OnEnable() {
-		selectLocation = 0;
+		
 		isPause = UIHandle.paused;
-		this.transform.position = RestartButton.transform.position;
+
+        if (isPause)
+        {
+            selectLocation = 0;
+            this.transform.position = ContinueButton.transform.position;
+        } else
+        {
+            selectLocation = 1;
+            this.transform.position = RestartButton.transform.position;
+        }
+		
 		delay = 0.8f;
 		Debug.Log ("Is enable firing??");
 	}
@@ -38,7 +48,7 @@ public class UISelection : MonoBehaviour {
 		}
 		if (input != 0) {
 			if (!vertAdjust) {
-				verticalInput = (int) input;
+                verticalInput = (input > 0) ? 1 : -1;
 				vertAdjust = true;
 			}
 		}
@@ -47,25 +57,31 @@ public class UISelection : MonoBehaviour {
 			switch (selectLocation) {
 			case 0:
 				{
-					if (isPause) {
-						selectLocation = 2;
-						this.transform.position = ContinueButton.transform.position;
-					} else {
-						selectLocation = 1;
-						this.transform.position = ReturnButton.transform.position;
-					}
+					
+					selectLocation = 2;
+				    this.transform.position = ReturnButton.transform.position;
+					
 					break;
 				}
 			case 1:
 				{
-					selectLocation = 0;
-					this.transform.position = RestartButton.transform.position;
+                    if (isPause)
+                        {
+                            selectLocation = 0;
+                            this.transform.position = ContinueButton.transform.position;
+                        }
+                    else
+                        {
+                            selectLocation = 2;
+                            this.transform.position = ReturnButton.transform.position;
+                        }
+					
 					break;
 				}
 			case 2:
 				{
 					selectLocation = 1;
-					this.transform.position = ReturnButton.transform.position;
+					this.transform.position = RestartButton.transform.position;
 					break;
 				}
 			} 
@@ -73,25 +89,30 @@ public class UISelection : MonoBehaviour {
 			switch (selectLocation) {
 			case 0:
 				{
-					selectLocation = 1;
-					this.transform.position = ReturnButton.transform.position;
-					break;
+                        selectLocation = 1;
+                        this.transform.position = RestartButton.transform.position;
+                        break;
 				}
 			case 1:
 				{
-					if (isPause) {
-						selectLocation = 2;
-						this.transform.position = ContinueButton.transform.position;
-					} else {
-						selectLocation = 0;
-						this.transform.position = RestartButton.transform.position;
-					}
+					
+					selectLocation = 2;
+					this.transform.position = ReturnButton.transform.position;
+					
 					break;
 				}
 			case 2:
 				{
-					selectLocation = 0;
-					this.transform.position = RestartButton.transform.position;
+                    if (isPause)
+                        {
+                            selectLocation = 0;
+                            this.transform.position = ContinueButton.transform.position;
+                        } else
+                        {
+                            selectLocation = 1;
+                            this.transform.position = RestartButton.transform.position;
+                        }
+					
 					break;
 				}
 			} 
@@ -106,13 +127,13 @@ public class UISelection : MonoBehaviour {
 		if (Input.GetButtonDown ("Fire1") || Input.GetKeyDown (KeyCode.Return) || Input.GetButtonDown("Submit")) {
 			switch (selectLocation) {
 			case 0:
-				UIHandle.RestartLoad ();
+				UIHandle.ResumeGame ();
 				break;
 			case 1:
-				UIHandle.ReturnLoad ();
+				UIHandle.RestartLoad ();
 				break;
 			case 2:
-				UIHandle.ResumeGame ();
+				UIHandle.ReturnLoad ();
 				break;
 			default:
 				Debug.LogWarning ("Defaulted");

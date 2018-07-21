@@ -12,12 +12,14 @@ public class EnemySpawner : MonoBehaviour
     private const float checkRate = 0.5f;
     private const float spawnRate = 2f;
 
-    private float repeatRate = 3f;
-    private float startSpawn = 5f;
+    private float repeatRate = 2.5f;
+    private float startSpawn = 2.5f;
     public Transform[] spawnPoints;
     private int numWaves = 1;
     private int doubleEnemySize = 5;
     private int numToSpawn = 1;
+
+    private int maxEnemies = 3;
     // Use this for initialization
     void Start()
     {
@@ -38,7 +40,8 @@ public class EnemySpawner : MonoBehaviour
     // Update is called once per frame
     void Spawn()
     {
-
+        string text = "Debug Spawner -> Enemy Count: " + Enemy.return_num_enemy();
+        Debug.Log(text);
 
         if (playerData.IsPlayerAlive() == false)
         {
@@ -46,7 +49,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
 
-        if (Enemy.return_num_enemy() <= numToSpawn)
+        if (Enemy.return_num_enemy() < maxEnemies)
         {
             int spawnPointIndex = Random.Range(0, spawnPoints.Length);
 		    Enemy spawned = Enemy.InstantiateNew (spawnPoints [spawnPointIndex].position);

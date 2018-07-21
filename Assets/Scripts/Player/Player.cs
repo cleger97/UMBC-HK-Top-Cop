@@ -84,6 +84,8 @@ public class Player : MonoBehaviour {
 	private float invulTime = 0f;
 	private float currInvulTime = 0;
 
+    public bool isInvul = false;
+
 	private float healthRegen = 0f;
 
 	private Transform healthBar;
@@ -610,6 +612,11 @@ public class Player : MonoBehaviour {
 		}
 	}
 		
+    public void SetInvul()
+    {
+        isInvul = true;
+    }
+
 	void UpdateHealth(float totalDamage) {
         // index of child objects
         int backindex = 0;
@@ -618,6 +625,11 @@ public class Player : MonoBehaviour {
         int text = 3;
 
         Text hpbar_text = null;
+
+        if (isInvul)
+        {
+            return;
+        }
 		
 		if (totalDamage > 0) {
 			rend.color = Color.red;

@@ -52,9 +52,9 @@ public class MenuUIHandle : MonoBehaviour {
 		levelManager = LevelManager.instance;
 		objective = ObjectiveScript.instance;
 
-		button1.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (RestartLoad);
-		button2.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (ReturnLoad);
-		button3.transform.GetChild (0).GetComponent<Button> ().onClick.AddListener (ResumeGame);
+		button1.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (ResumeGame);
+		button2.transform.GetChild(0).GetComponent<Button>().onClick.AddListener (RestartLoad);
+		button3.transform.GetChild (0).GetComponent<Button> ().onClick.AddListener (ReturnLoad);
 		MainMenu ();
         
     }
@@ -123,8 +123,8 @@ public class MenuUIHandle : MonoBehaviour {
 		text.SetActive(true);
 		text.GetComponent<Text> ().text = "Defeat";
 		text.GetComponent<Text> ().color = Color.red;
-		button1.SetActive(true);
 		button2.SetActive(true);
+		button3.SetActive(true);
 		paused = false;
 
 		select.SetActive (true);
@@ -151,7 +151,7 @@ public class MenuUIHandle : MonoBehaviour {
 
 		objective.ActivateObjects ();
 		Debug.Log ("Clicked!");
-		SceneManager.LoadScene(currSceneName, LoadSceneMode.Single);
+        levelManager.RestartLevel();
 		paused = false;
 		Time.timeScale = 1;
 	}
@@ -162,7 +162,7 @@ public class MenuUIHandle : MonoBehaviour {
 
 		Debug.Log ("Clicked!");
 		SceneManager.LoadScene (menuSceneName, LoadSceneMode.Single);
-		levelManager.UpdateLevel (0);
+        levelManager.LoadSpecificLevel(0);
 		paused = false;
 		Time.timeScale = 1;
 	}

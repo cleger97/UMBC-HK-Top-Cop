@@ -32,8 +32,7 @@ public class PlayGameButton : MonoBehaviour {
     public void Load()
     {
         Debug.Log("Loaded game!");
-		levelManager.UpdateLevel (1);
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        levelManager.NextLevel();
 
     }
 }

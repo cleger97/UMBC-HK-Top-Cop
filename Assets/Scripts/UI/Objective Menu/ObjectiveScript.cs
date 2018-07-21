@@ -41,6 +41,8 @@ public class ObjectiveScript : MonoBehaviour {
 
 	private bool isVictory = false;
 
+    private Player player;
+
 	// UI handle
 	public bool UIShow = false;
 
@@ -97,6 +99,11 @@ public class ObjectiveScript : MonoBehaviour {
 		}
 
 	}
+
+    public void UpdatePlayer()
+    {
+        player = GameObject.Find("Player").GetComponent<Player>();
+    }
 
 	public void ActivateObjects() {
 		foreach (Transform objects in transform) {
@@ -166,6 +173,11 @@ public class ObjectiveScript : MonoBehaviour {
 
         finished = true;
         waitForEnd = 5f;
+
+        if (levelManager.currentLevel != 0 && levelManager.currentLevel != LevelManager.VictoryLevel)
+        {
+            player.SetInvul();
+        }
         
     }
 

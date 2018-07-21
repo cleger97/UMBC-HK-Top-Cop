@@ -1866,7 +1866,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1413599886262804, guid: bd45dd909f4d64b44a2f0754eac8c76d, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd45dd909f4d64b44a2f0754eac8c76d, type: 2}
@@ -2492,7 +2492,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1121438519}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: faf5751554af43b4b824f52c4204a1cb, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -2880,6 +2880,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goalText: {fileID: 1165378475}
   progressText: {fileID: 1776751313}
+  finished: 0
+  waitForEnd: 0
   UIShow: 0
 --- !u!1 &1346320910
 GameObject:
@@ -3323,7 +3325,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1487639017}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: faf5751554af43b4b824f52c4204a1cb, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
