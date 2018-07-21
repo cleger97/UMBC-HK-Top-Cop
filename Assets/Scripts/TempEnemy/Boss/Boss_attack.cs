@@ -3,43 +3,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boss_attack : MonoBehaviour {
-    
+public class Boss_attack : MonoBehaviour
+{
+
     Animator anim;
-    
+
     GameObject player;
 
     //public float detectionCircleRadius;
     public float attackCircleRadius;
-    
+
     private int damage;
     public Transform dmgArea;
     private float attackCD;
 
-    private const float ATTACK_CD = 1f;
+    private const float ATTACK_CD = 0.5f;
     private const int ATTACK_INCREASE = 10;
 
     private bool attackUp;
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         player = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
-        
+
         damage = 50;
         attackCD = 0.3f;
 
         attackUp = false;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
     }
-    
+
 
     public bool attackCheck()
     {
-        anim.SetBool("isAttack",false);
+        anim.SetBool("isAttack", false);
         GameObject[] check = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, transform));
 
         if (check.Length > 0)
@@ -66,7 +69,6 @@ public class Boss_attack : MonoBehaviour {
                 }
                 return true;
             }
-            
 
             float distance = player.transform.position.x - this.transform.position.x;
             int direction = (int)Mathf.Sign(distance);
@@ -86,16 +88,15 @@ public class Boss_attack : MonoBehaviour {
             damage += ATTACK_INCREASE;
             attackUp = true;
         }
-            
+
     }
 
     public void exit_lowH_mode()
     {
         attackUp = false;
-        damage -= ATTACK_INCREASE; 
+        damage -= ATTACK_INCREASE;
     }
 
-    
-    
-}
 
+
+}

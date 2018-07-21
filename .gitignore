@@ -37,3 +37,4 @@ sysinfo.txt
 # Configuration
 *.dwlt
 ProjectSettings/ProjectVersion.txt
+Assets/Scripts/TempEnemy/Enemy.cs
