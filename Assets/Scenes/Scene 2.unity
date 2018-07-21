@@ -34141,7 +34141,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press Fire to Continue
+  m_Text: Press A to Start
 --- !u!222 &494680321
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -54024,10 +54024,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 978e0ee17ded4c64f970d03d64471802, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -90439,6 +90439,8 @@ MonoBehaviour:
   imageObj: {fileID: 1597260396}
   textObj: {fileID: 2107070033}
   text2obj: {fileID: 494680318}
+  audio: {fileID: 0}
+  hasStarted: 0
   delay: 0
 --- !u!114 &1244518700
 MonoBehaviour:
@@ -154444,10 +154446,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'LEVEL 2
+  m_Text: 'Part 3: The Elevator
 
 
-    SURVIVE FOR 1:30'
+    Survive for 1:30'
 --- !u!1 &2107129615
 GameObject:
   m_ObjectHideFlags: 0

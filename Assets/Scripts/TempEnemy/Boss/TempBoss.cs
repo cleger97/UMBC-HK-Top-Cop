@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TempBoss : Enemy {
-    private const float BASE_STUN_TIME = 0.75f;
+    private const float BASE_STUN_TIME = 1.5f;
+    private const float STUN_DECAY_INCREMENT = 0.3f;
     private const float LOW_HEALTH = 0.3f;
+
+    // hitstun decay
+    // prevents you from permanently stunning boss
+    private int numOfHits;
+    private float timeSinceLastHit;
 
     private const float LOW_HEALTH_MODE_CD = 90f;
     private float lowHModeTimer = 0f;
@@ -54,10 +60,21 @@ public class TempBoss : Enemy {
         underAttack = false;
         stunTimer = 0f;
     }
-	
 
-	// Update is called once per frame
-	void FixedUpdate () {
+    void Update()
+    {
+        if (timeSinceLastHit > 1f)
+        {
+            numOfHits = 0;
+        } else
+        {
+            timeSinceLastHit += Time.deltaTime;
+        }
+    }
+
+
+    // Update is called once per frame
+    void FixedUpdate () {
         if (!playerData.IsPlayerAlive())
         {
             endGame();
@@ -144,7 +161,10 @@ public class TempBoss : Enemy {
         float remHealth = bossData.eneTakeDamage(damage);
         underAttack = true;
 
-        stunTimer = BASE_STUN_TIME;
+        float calculatedStunTimer = ((BASE_STUN_TIME - (numOfHits * STUN_DECAY_INCREMENT)));
+        stunTimer = (calculatedStunTimer > 0) ? calculatedStunTimer : 0;
+        numOfHits++;
+        timeSinceLastHit = 0f;
         if (remHealth <= 0)
             dead();
         else if (remHealth <= LOW_HEALTH)

@@ -25,6 +25,8 @@ public abstract class Enemy : MonoBehaviour {
 
 	public static GameObject enemyContainer;
 
+    
+
     public static int return_num_enemy()
     {
         return num_enemy_alive;

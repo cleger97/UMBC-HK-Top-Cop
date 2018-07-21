@@ -35,6 +35,10 @@ public class ObjectiveScript : MonoBehaviour {
     private string finishText;
     private string finishObjective;
 
+    // delay ending
+    public bool finished = false;
+    public float waitForEnd = 0f;
+
 	private bool isVictory = false;
 
 	// UI handle
@@ -67,6 +71,17 @@ public class ObjectiveScript : MonoBehaviour {
 	}
 
 	void Update() {
+        if (finished)
+        {
+            waitForEnd -= Time.deltaTime;
+            if (waitForEnd < 0)
+            {
+                waitForEnd = 0f;
+                finished = false;
+                levelManager.NextLevel();
+            }
+            return;
+        }
 		// objective UI only needs to update by itself when it's a timed level
 		if (currentGoal != 1) {
 			return;
@@ -144,7 +159,13 @@ public class ObjectiveScript : MonoBehaviour {
     private void GotoNext()
     {
         currentGoal = (int)TypeOfGoal.None;
-        levelManager.NextLevel();
+
+        transform.GetChild(0).gameObject.SetActive(false);
+
+        goalText.text = "Complete! Moving onto next level...";
+
+        finished = true;
+        waitForEnd = 5f;
         
     }
 

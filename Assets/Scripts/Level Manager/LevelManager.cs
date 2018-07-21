@@ -13,7 +13,7 @@ public class LevelManager : MonoBehaviour {
     public static string[] levels = {"menu", "Scene 1", "Lobby", "Scene 2", "Scene 3", "Victory"};
 
     // experimental version
-	//public static string[] levels = { "menu", "Lobby", "Victory"};
+    //public static string[] levels = { "menu", "Scene 3", "Victory"};
 	public int currentLevel = 0;
 
 	public static int VictoryLevel = 2;
