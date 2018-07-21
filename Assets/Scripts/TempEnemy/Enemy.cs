@@ -29,11 +29,12 @@ public abstract class Enemy : MonoBehaviour {
 
     public static int return_num_enemy()
     {
+        resetEnemyCount();
         return num_enemy_alive;
     }
 
 	public static void resetEnemyCount() {
-		num_enemy_alive = GameObject.FindGameObjectsWithTag ("Enemy").Length;
+		num_enemy_alive = GameObject.Find ("Enemy Container").transform.childCount;
 	}
     public abstract void takeDamage(int damage);
     public abstract string returnName();

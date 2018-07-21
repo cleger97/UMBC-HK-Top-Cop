@@ -26,6 +26,11 @@ public class LobbyFinish : MonoBehaviour {
 
         enemySpawners = GameObject.Find("Enemy Spawners");
 
+        if (Enemy.return_num_enemy() > 0)
+        {
+            Debug.LogError("Enemy count is above 0 at load in");
+        }
+
         
 	}
 
