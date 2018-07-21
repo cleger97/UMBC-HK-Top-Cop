@@ -4894,10 +4894,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Part 2: The Lobby
+  m_Text: 'LEVEL 1
 
 
-    Reach the Elevator'
+    BEAT 10 ENEMIES'
 --- !u!1 &254616621
 GameObject:
   m_ObjectHideFlags: 0
@@ -22534,7 +22534,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press A to Start
+  m_Text: Press Fire to Continue
 --- !u!222 &1146895452
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43945,12 +43945,10 @@ MonoBehaviour:
   imageObj: {fileID: 2074014759}
   textObj: {fileID: 254506032}
   text2obj: {fileID: 1146895450}
-  audio: {fileID: 0}
   textToDisplay: 'Part 2: The Lobby\n\nReach the Elevator'
   goalType: 2
   goalAmount: 0
   goalText: Reach the Elevator
-  hasStarted: 0
 --- !u!114 &2038587387
 MonoBehaviour:
   m_ObjectHideFlags: 0

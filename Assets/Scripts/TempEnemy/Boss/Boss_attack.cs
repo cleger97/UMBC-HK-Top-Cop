@@ -25,7 +25,7 @@ public class Boss_attack : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
         
-        damage = 50;
+        damage = 20;
         attackCD = 0.3f;
 
         attackUp = false;

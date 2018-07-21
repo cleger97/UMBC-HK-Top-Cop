@@ -78,7 +78,7 @@ public class Player : MonoBehaviour {
 	public float currentHealth;
     // Block Health
     private float blockHealth = 150f;
-    public float maxBlockHealth = 250f;
+    public float maxBlockHealth = 150f;
     private float timeSinceLastBlock = 0f;
 
 	private float invulTime = 0f;
@@ -358,7 +358,7 @@ public class Player : MonoBehaviour {
         //Debug.Log(timeSinceLastBlock);
         if (timeSinceLastBlock > 3.0f)
         {
-            float incrementShield = 50f * Time.deltaTime; // should be 10 block/second
+            float incrementShield = 10f * Time.deltaTime; // should be 10 block/second
             if (blockHealth < maxBlockHealth)
             {
                 blockHealth += incrementShield;

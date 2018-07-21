@@ -235,7 +235,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press A To Start
+  m_Text: Press Fire to Continue
 --- !u!222 &245966789
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1341,8 +1341,6 @@ MonoBehaviour:
   imageObj: {fileID: 440789853}
   textObj: {fileID: 1191856004}
   text2obj: {fileID: 245966787}
-  audio: {fileID: 0}
-  hasStarted: 0
   delay: 0
 --- !u!114 &1166024013
 MonoBehaviour:
@@ -1495,10 +1493,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Part 4: The Rooftop
+  m_Text: 'LEVEL 3
 
 
-    Beat the Boss'
+    BEAT THE BOSS.'
 --- !u!1001 &1252049871
 Prefab:
   m_ObjectHideFlags: 0
@@ -2345,10 +2343,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 978e0ee17ded4c64f970d03d64471802, type: 3}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
