@@ -5,17 +5,21 @@ using UnityEngine;
 public class TempBoss : Enemy
 {
     private const float BASE_STUN_TIME = 1.5f;
-    private const float STUN_DECAY_INCREMENT = 0.3f;
-    
-    private const float LOW_HEALTH = 0.3f;
+    private const float STUN_DECAY_INCREMENT = 0.5f;
+    private const float RESET_NUM_HITS_TIME = 2.5f;
+
+    private const float TRIGGER_LOWH = 0.25f;
 
     // hitstun decay
     // prevents you from permanently stunning boss
     private int numOfHits;
     private float timeSinceLastHit;
+    private bool allowStun = true;
+    private float stunTimer;
+
 
     private const float LOW_HEALTH_MODE_CD = 90f;
-    private float lowHModeTimer = 0f;
+    private float lowHModeCDTimer = 0f;
 
     private Boss_Data bossData;
     Enemy_Movement mov;
@@ -24,27 +28,30 @@ public class TempBoss : Enemy
     private const float IN_COMBAT_EXIT_TIME = 2f;
     private float inCombatTimer;
     //private bool isInCombat = false;
+    
 
 
-    private enum bossState { IN_COMBAT, IDLE, JUMP, LOW_HEALTH, RUN_AWAY }
-    private enum inCombatState { ATTACK, CHASE, STUN }
+    private enum bossState { IN_COMBAT, IDLE, JUMP, LOW_HEALTH,RUN_AWAY };
+    private enum inCombatState { ATTACK, CHASE, STUN };
+    private enum attackSet { BASE_ATTACK = 0,RUN_ATT, TORNADO_ATT,EMPTY};
+    
+    private attackSet currAttSkill;
     private inCombatState currCombatState;
     private bossState currentState;
-    private bool isLowHP;
 
-
-
-
-    private float stunTimer;
+    private bool isLowHP = false;
+    private bool isInLowHeaMode = false;
+    
     private bool isUnderAttack = false;
     private bool isAttacking = false;
-    //private float underAttackTimer;
+    
 
     private Boss_attack attackData;
     private GameObject player;
     private Player playerData;
     private BossFinish bossFinish;
 
+    private float furiousRate;
     public override string returnName()
     {
         return "Boss";
@@ -65,9 +72,9 @@ public class TempBoss : Enemy
 
         currentState = bossState.IDLE;
         currCombatState = inCombatState.CHASE;
-        isLowHP = false;
+        
 
-
+        currAttSkill = attackSet.BASE_ATTACK;
         stunTimer = 0f;
 
         inCombatTimer = 0;
@@ -75,7 +82,7 @@ public class TempBoss : Enemy
 
     void Update()
     {
-        if (timeSinceLastHit > 1f)
+        if (timeSinceLastHit > RESET_NUM_HITS_TIME)
         {
             numOfHits = 0;
         }
@@ -94,17 +101,21 @@ public class TempBoss : Enemy
             return;
         }
 
-        check_inCombat();
+        if(currentState != bossState.RUN_AWAY)
+            check_inCombat();
 
-        if (isLowHP && lowHModeTimer <= 0)
-        {
-            currentState = bossState.RUN_AWAY;
-            low_health_mode();
-        }
+
+        Debug.Log("inCombaTimer = " + inCombatTimer);
+
+        if (isInLowHeaMode) { low_health_mode(); }
         else
         {
-            if (lowHModeTimer > 0)
-                lowHModeTimer -= Time.deltaTime;
+            if (isLowHP && lowHModeCDTimer <= 0) { enter_lowHealth(); }
+            else
+            {
+                bossData.auto_health_regen(inCombatTimer > 0);
+                if (lowHModeCDTimer > 0) { lowHModeCDTimer -= Time.deltaTime; }
+            }
         }
 
         Debug.Log(currentState);
@@ -116,46 +127,66 @@ public class TempBoss : Enemy
             case bossState.IDLE:
                 idle_state();
                 break;
-
-            case bossState.LOW_HEALTH:
-                //low_health_mode();
-                break;
-
             case bossState.RUN_AWAY:
-                temp_run_away();
+                run_state();
                 break;
             default:
                 return;
         }
     }
+
     private void check_inCombat()
     {
         if (isUnderAttack || isAttacking)
         {
-            inCombatTimer = IN_COMBAT_EXIT_TIME;
+            set_inCombatTime();
 
         }
         else
         {
             if (inCombatTimer > 0)
+            {
+                currentState = bossState.IN_COMBAT;
                 inCombatTimer -= Time.deltaTime;
+            }
+            else
+            {
+                currentState = bossState.IDLE;
+                attackData.reset_att_CD((int)attackSet.BASE_ATTACK);
+                isUnderAttack = false;
+                isAttacking = false;
+            }
         }
+
+        if (inCombatTimer > 0)
+            currentState = bossState.IN_COMBAT;
     }
 
 
     private void in_combat_state()
     {
-
-        if (isUnderAttack)
+        //can't been stunned while boss is punching
+        if (isUnderAttack && allowStun && !(attackData.return_att_CD() <= 0.3f))
+        {
+            isUnderAttack = false;
             currCombatState = inCombatState.STUN;
-
+        }
+        else
+        {
+            if (check_skillSet())//if any skill is avaliable 
+            {
+                currCombatState = inCombatState.ATTACK;
+            }
+        }
+        Debug.Log("currCombatState = " + currCombatState);
         switch (currCombatState)
         {
+            
             case inCombatState.ATTACK:
                 attack_state();
                 break;
             case inCombatState.CHASE:
-                move_state();
+                chase_state();
                 break;
             case inCombatState.STUN:
                 stun_state();
@@ -166,31 +197,110 @@ public class TempBoss : Enemy
 
     private void attack_state()
     {
+        //avoid changing skill while doing basic attack
+        if (currAttSkill != attackSet.BASE_ATTACK && (attackData.return_att_CD() <= 0.3f))
+            currAttSkill = attackSet.BASE_ATTACK;
+        Debug.Log("currAttSkill = " + currAttSkill);
+        switch (currAttSkill)
+        {
+            case attackSet.BASE_ATTACK:
+                in_base_attack();
+                break;
+            case attackSet.RUN_ATT:
+                in_run_attack();
+                break;
+            case attackSet.TORNADO_ATT:
+                in_tornado_attack();
+                break;
+        }
+       
+    }
 
+    private bool check_skillSet()
+    {
+        switch (attackData.skill_CD_check())//check CoolDown
+        {
+            //check pre-condition
+            case (int)attackSet.RUN_ATT:
+                if (mov.rushAtt_prec())
+                {
+                    currAttSkill = attackSet.RUN_ATT;
+                    return true;
+                }
+                return false;
+            case (int)attackSet.TORNADO_ATT:
+                currAttSkill = attackSet.TORNADO_ATT;
+                return true;
+            default:
+                currAttSkill = attackSet.BASE_ATTACK;
+                return false;
+        }
+    }
+
+   
+
+    private void in_base_attack()
+    {
         if (attackData.startAttack())
         {
             isAttacking = true;
-            return;
         }
         else
         {
             currCombatState = inCombatState.CHASE;
             isAttacking = false;
         }
-        //currentState = bossState.MOVE;
+    }
+
+
+    private void in_run_attack()
+    {
+        Debug.Log("in rush attack");
+     
+         if (attackData.rush_attack())
+         {
+            isAttacking = true;
+            mov.rush_att_mov();
+            allowStun = false;
+         }
+         else
+         {
+            exit_skillAtt();
+        }
 
     }
 
-    private void move_state()
+    private void in_tornado_attack()
+    {
+        if (attackData.tornado_attack())
+        {
+            isAttacking = true;
+            mov.tornado_att_mov();
+            allowStun = false;
+        }
+        else
+        {
+            exit_skillAtt();
+        }
+    }
+
+    private void exit_skillAtt()
+    {
+        currCombatState = inCombatState.CHASE;
+        isAttacking = false;
+        allowStun = true;
+        currAttSkill = attackSet.EMPTY;
+    }
+
+    private void chase_state()
     {
         if (attackData.attackCheck())
         {
-            //currentState = bossState.ATTACK;
             currCombatState = inCombatState.ATTACK;
             return;
         }
 
-        //if (!mov.chasingPlayer())
+        
         if (mov.inDectectRange() || inCombatTimer > 0)
         {
             mov.chasingPlayer();
@@ -204,14 +314,12 @@ public class TempBoss : Enemy
 
     }
 
-
-
     private void idle_state()
     {
 
         if (!mov.idleTime())
-            currentState = bossState.IN_COMBAT;
-        //currentState = bossState.MOVE;
+            set_inCombatTime();
+        
 
     }
 
@@ -227,7 +335,7 @@ public class TempBoss : Enemy
         timeSinceLastHit = 0f;
         if (remHealth <= 0)
             dead();
-        else if (remHealth <= LOW_HEALTH)
+        else if (remHealth <= TRIGGER_LOWH )
         {
             //enter low health mode
             isLowHP = true;
@@ -272,7 +380,7 @@ public class TempBoss : Enemy
             //anim.SetBool("isIdle", false);
             stunTimer = 0f;
             isUnderAttack = false;
-            //currentState = bossState.IDLE;
+            
             currCombatState = inCombatState.CHASE;
         }
 
@@ -280,31 +388,94 @@ public class TempBoss : Enemy
 
     private void low_health_mode()
     {
-
+        Debug.Log("In low health mode");
         if (bossData.inLowMode())
         {
-            attackData.enter_lowH_mode();
             return;
         }
         else
         {
-            //currentState = bossState.IDLE;
-            attackData.exit_lowH_mode();
-            isLowHP = false;
-            lowHModeTimer = LOW_HEALTH_MODE_CD;
+            exit_lowHealth();
+            currentState = bossState.IDLE;
+            return;
         }
+
     }
 
-    private void temp_run_away()
+    private void enter_lowHealth()
     {
-        if (mov.walk_away())
+        if (!isInLowHeaMode)
         {
-            return;
+            isInLowHeaMode = true;
+            allowStun = false;
+            currentState = bossState.RUN_AWAY;
+            stop_allAttack();
+
+            attackData.enter_lowH_mode();
+            
+
+            set_inCombatTime(0);
+            bossData.set_damRedRate();
+            
         }
-        else
-            currentState = bossState.IN_COMBAT;
 
     }
 
-    
+    private void exit_lowHealth()
+    {
+        isLowHP = false;
+        isInLowHeaMode = false;
+        allowStun = true;
+        lowHModeCDTimer = LOW_HEALTH_MODE_CD;
+        attackData.exit_lowH_mode();
+        bossData.set_damRedRate(0);
+    }
+
+    private void stop_allAttack()
+    {
+        
+        isUnderAttack = false;
+        isAttacking = false;
+        switch (currAttSkill)
+        {
+            case attackSet.RUN_ATT:
+                attackData.reset_att_CD((int)attackSet.RUN_ATT);
+                break;
+            case attackSet.TORNADO_ATT:
+                attackData.reset_att_CD((int)attackSet.TORNADO_ATT);
+                break;
+            case attackSet.BASE_ATTACK:
+                attackData.reset_att_CD((int)attackSet.BASE_ATTACK);
+                break;
+            default:
+                return;
+        }
+    }
+
+    private void run_state()
+    {
+        if (mov.runAway())
+        {
+            set_inCombatTime(0);
+            return;
+        }
+        else
+        {
+            set_inCombatTime(0);
+            currentState = bossState.IDLE;
+        }
+
+    }
+
+    private void set_inCombatTime(float exitTime = IN_COMBAT_EXIT_TIME)
+    {
+        inCombatTimer = exitTime;
+        
+    }
+
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        mov.OntriggerEnter(other);
+    }
+
 }

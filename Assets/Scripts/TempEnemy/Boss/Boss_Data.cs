@@ -5,8 +5,9 @@ using UnityEngine;
 public class Boss_Data : MonoBehaviour
 {
     
-    private float regenTimer;
-    private static float max_health = 800f;
+    
+
+    private static float max_health = 1000f;
     private float currHealth;
     private GameObject healthBar;
     private GameObject currHealthLayer;
@@ -18,23 +19,36 @@ public class Boss_Data : MonoBehaviour
     public static float TimeDisplayHurt = 0.5f;
     Color defColor;
 
-    private const float COMBAT_EXIT_TIME = 3f;
-    private const float OUTCOMBAT_REG_CD = 2.0f;
-    private const float LOWH_REG_CD = 1.0f;
+    
 
     private float inCombatTimer;
 
     private bool lowHealth;
 
+    private float inLowHealth_timer;
+    private const float LOWHEALTH_DUR = 20f;
 
+    private const float INCOM_REG_AMOUNT = 0.005f;
+    private const float OUTCOM_REG_AMOUNT = 0.01f;
+    private const float LOWHEAL_REG_AMOUNT = 0.05f;
+    private const float LOWHEAL_REG_LIMIT = 0.6f;
+
+
+    private float regenTimer = 0f;
+    private const float HEALTH_REG_CD = 2f;
+
+    
 
     private bool underAttack;
+
+    private const float DEF_DAMAGE_RED = 0.2f;
+    private float damageReduceRate = 0;
 
     // Use this for initialization
     void Start()
     {
         currHealth = max_health;
-        regenTimer = 1.0f;
+        
         timeRed = TimeDisplayHurt;
 
         healthBar = this.transform.GetChild(3).gameObject;
@@ -44,42 +58,24 @@ public class Boss_Data : MonoBehaviour
         //defColor = GetComponent<SpriteRenderer>().material.GetColor("_Color");
         inCombatTimer = 0f;
 
+        inLowHealth_timer = LOWHEALTH_DUR;
 
         lowHealth = false;
         underAttack = false;
-
-
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(currHealth);
+        //Debug.Log(currHealth);
         if (timeRed > 0)
         {
             timeRed -= Time.deltaTime;
         }
         else
             GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.white);
-
-        if (inCombatTimer > 0)
-        {
-            inCombatTimer -= Time.deltaTime;
-
-        }
-        else if (inCombatTimer <= 0 && !lowHealth)
-        {
-            underAttack = false;
-            if (regenTimer > 0)
-                regenTimer -= Time.deltaTime;
-            else
-            {
-                regenHealth(0.005f);
-                regenTimer = OUTCOMBAT_REG_CD;
-            }
-        }
-
+        //Debug.Log("current health = " + currHealth);
 
     }
 
@@ -92,10 +88,10 @@ public class Boss_Data : MonoBehaviour
 
     public float eneTakeDamage(int damage)
     {
-        currHealth -= damage;
+        currHealth -= (damage - (damageReduceRate * damage));
         underAttack = true;
         timeRed = TimeDisplayHurt;
-        setCombatTimer();
+        //setCombatTimer();
 
 
         GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.red);
@@ -105,10 +101,10 @@ public class Boss_Data : MonoBehaviour
         return calHealth;
     }
 
-    public void setCombatTimer()
+    /*public void setCombatTimer()
     {
         inCombatTimer = COMBAT_EXIT_TIME;
-    }
+    }*/
 
     public void SetHealthBar(float calHealth)
     {
@@ -137,30 +133,30 @@ public class Boss_Data : MonoBehaviour
 
     public bool inLowMode()
     {
-        lowHealth = true;
-        if (regenTimer > 0)
-            regenTimer -= Time.deltaTime;
+        if (inLowHealth_timer > 0 && (currHealth < max_health* LOWHEAL_REG_LIMIT))
+        {
+            if (regenTimer > 0)
+                regenTimer -= Time.deltaTime;
+            else
+            {
+                regenHealth(LOWHEAL_REG_AMOUNT);
+                regenTimer = HEALTH_REG_CD;
+            }
+            inLowHealth_timer -= Time.deltaTime;
+            return true;
+        }
         else
         {
-            regenHealth(0.01f);
-            regenTimer = LOWH_REG_CD;
-            if (currHealth >= 0.5f * max_health)
-            {
-                lowHealth = false;
-                return false;
-            }
+            inLowHealth_timer = LOWHEALTH_DUR;
+            return false;
+            
         }
-
-        /*if (inCombatTimer <= 0)
-            return false;*/
-
-
-        return true;
     }
+
 
     private void regenHealth(float amountPer)
     {
-        if (currHealth == max_health)
+        if (currHealth >= max_health)
             return;
 
         if (currHealth + (currHealth * amountPer) > max_health)
@@ -172,8 +168,36 @@ public class Boss_Data : MonoBehaviour
         SetHealthBar(currHealth / max_health);
     }
 
-    private void reduceIncomingDamage()
-    {
 
+    public void set_damRedRate(float rate = DEF_DAMAGE_RED)
+    {
+        if (rate >= 0 && rate <= 1)
+            damageReduceRate = rate;
     }
+
+    //Everytime changing health rengeration
+    private void reset_regenTimer()
+    {
+        regenTimer = 0;
+    }
+
+    public void auto_health_regen(bool isInCombat)
+    {
+        
+        if (regenTimer <= 0)
+        {
+            float regAmount;
+            if (isInCombat)
+                regAmount = INCOM_REG_AMOUNT;
+            else
+                regAmount = OUTCOM_REG_AMOUNT;
+
+            regenHealth(regAmount);
+            regenTimer = HEALTH_REG_CD;
+
+        }
+        else
+            regenTimer -= Time.deltaTime;
+    }
+
 }
