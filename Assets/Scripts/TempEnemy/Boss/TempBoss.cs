@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,7 +35,8 @@ public class TempBoss : Enemy
     private enum bossState { IN_COMBAT, IDLE, JUMP, LOW_HEALTH,RUN_AWAY };
     private enum inCombatState { ATTACK, CHASE, STUN };
     private enum attackSet { BASE_ATTACK = 0,RUN_ATT, TORNADO_ATT,EMPTY};
-    
+    Type allSkills = typeof(attackSet);
+
     private attackSet currAttSkill;
     private inCombatState currCombatState;
     private bossState currentState;
@@ -51,7 +53,14 @@ public class TempBoss : Enemy
     private Player playerData;
     private BossFinish bossFinish;
 
-    private float furiousRate;
+    private const int MAX_FUR_LEVEL = 100;
+    private int furiousLevel = 0;
+    private const int FUR_INC_RATE = 8;
+    private const int FUR_DEC_RATE = 10;
+
+    private const float FUR_CHANGE_RATE = 1f;
+    private float furChangeTimer;
+
     public override string returnName()
     {
         return "Boss";
@@ -62,6 +71,7 @@ public class TempBoss : Enemy
 
     void Start()
     {
+        
         bossData = GetComponent<Boss_Data>();
         anim = GetComponent<Animator>();
         mov = GetComponent<Enemy_Movement>();
@@ -78,6 +88,7 @@ public class TempBoss : Enemy
         stunTimer = 0f;
 
         inCombatTimer = 0;
+        
     }
 
     void Update()
@@ -105,8 +116,9 @@ public class TempBoss : Enemy
             check_inCombat();
 
 
-        Debug.Log("inCombaTimer = " + inCombatTimer);
+        //Debug.Log("inCombaTimer = " + inCombatTimer);
 
+        //Debug.Log("Furious level = " + furiousLevel);
         if (isInLowHeaMode) { low_health_mode(); }
         else
         {
@@ -118,6 +130,11 @@ public class TempBoss : Enemy
             }
         }
 
+        /*if (isAttacking) { Debug.Log("IsAttacking"); }
+        else { Debug.Log("Is not attacking"); }
+
+        if (isUnderAttack) { Debug.Log("IsUnderAttack"); }
+        else { Debug.Log("Is not underattack"); }*/
         Debug.Log(currentState);
         switch (currentState)
         {
@@ -159,25 +176,48 @@ public class TempBoss : Enemy
         }
 
         if (inCombatTimer > 0)
+        {
+            if(currentState == bossState.IDLE) { mov.face_toward(); }
+
             currentState = bossState.IN_COMBAT;
+            if(furChangeTimer < 0)
+            {
+                furiousLevel = (furiousLevel + FUR_INC_RATE >= MAX_FUR_LEVEL) ? MAX_FUR_LEVEL : furiousLevel + FUR_INC_RATE;
+                furChangeTimer = FUR_CHANGE_RATE;
+            }
+            else { furChangeTimer -= Time.deltaTime; }
+        }
+        else
+        {
+            if(furChangeTimer < 0)
+            {
+                furiousLevel = (furiousLevel - FUR_DEC_RATE <= MAX_FUR_LEVEL) ? 0 : furiousLevel - FUR_DEC_RATE;
+                furChangeTimer = FUR_CHANGE_RATE;
+            }
+            else { furChangeTimer -= Time.deltaTime; }
+        }
     }
 
 
     private void in_combat_state()
     {
         //can't been stunned while boss is punching
-        if (isUnderAttack && allowStun && !(attackData.return_att_CD() <= 0.3f))
+        if (isUnderAttack)
         {
             isUnderAttack = false;
-            currCombatState = inCombatState.STUN;
+            if(allowStun && !(attackData.return_att_CD() <= 0.3f))
+                currCombatState = inCombatState.STUN;
         }
-        else
+     
+        if(currCombatState != inCombatState.STUN)
         {
-            if (check_skillSet())//if any skill is avaliable 
-            {
-                currCombatState = inCombatState.ATTACK;
-            }
+            if(currAttSkill == attackSet.EMPTY )
+           {
+               if (check_skillSet()) { currCombatState = inCombatState.ATTACK; }
+           }
+            
         }
+
         Debug.Log("currCombatState = " + currCombatState);
         switch (currCombatState)
         {
@@ -197,9 +237,7 @@ public class TempBoss : Enemy
 
     private void attack_state()
     {
-        //avoid changing skill while doing basic attack
-        if (currAttSkill != attackSet.BASE_ATTACK && (attackData.return_att_CD() <= 0.3f))
-            currAttSkill = attackSet.BASE_ATTACK;
+       
         Debug.Log("currAttSkill = " + currAttSkill);
         switch (currAttSkill)
         {
@@ -218,38 +256,52 @@ public class TempBoss : Enemy
 
     private bool check_skillSet()
     {
-        switch (attackData.skill_CD_check())//check CoolDown
+
+        foreach (int i in Enum.GetValues(allSkills))
         {
-            //check pre-condition
-            case (int)attackSet.RUN_ATT:
-                if (mov.rushAtt_prec())
+
+            if (attackData.skill_CD_check(i))
+            {
+                switch (i)//check CoolDown
                 {
-                    currAttSkill = attackSet.RUN_ATT;
-                    return true;
+                    //check pre-condition
+                    case (int)attackSet.RUN_ATT:
+                        if (mov.rushAtt_prec() || furiousLevel > 20)
+                        {
+                            Debug.Log("Run attack is avaliable");
+                            currAttSkill = attackSet.RUN_ATT;
+                            return true;
+                        }
+                        break;
+                    case (int)attackSet.TORNADO_ATT:
+                        if (furiousLevel > 35)
+                        {
+                            Debug.Log("tornado attack is avaliable");
+                            currAttSkill = attackSet.TORNADO_ATT;
+                            return true;
+                        }
+                        break;
                 }
-                return false;
-            case (int)attackSet.TORNADO_ATT:
-                currAttSkill = attackSet.TORNADO_ATT;
-                return true;
-            default:
-                currAttSkill = attackSet.BASE_ATTACK;
-                return false;
+            }
         }
+        currAttSkill = attackSet.BASE_ATTACK;
+        return false;
     }
 
    
-
     private void in_base_attack()
     {
-        if (attackData.startAttack())
+        int val = attackData.startAttack();
+        if (val == 1)
         {
             isAttacking = true;
         }
-        else
-        {
+        else if (val == 2) { currAttSkill = attackSet.EMPTY; }
+        else {
             currCombatState = inCombatState.CHASE;
             isAttacking = false;
         }
+        
     }
 
 
@@ -319,8 +371,6 @@ public class TempBoss : Enemy
 
         if (!mov.idleTime())
             set_inCombatTime();
-        
-
     }
 
 
@@ -416,6 +466,7 @@ public class TempBoss : Enemy
 
             set_inCombatTime(0);
             bossData.set_damRedRate();
+            furiousLevel = 0;
             
         }
 
@@ -450,6 +501,7 @@ public class TempBoss : Enemy
             default:
                 return;
         }
+        currAttSkill = attackSet.EMPTY;
     }
 
     private void run_state()
@@ -457,6 +509,8 @@ public class TempBoss : Enemy
         if (mov.runAway())
         {
             set_inCombatTime(0);
+            isUnderAttack = false;
+            isAttacking = false;
             return;
         }
         else

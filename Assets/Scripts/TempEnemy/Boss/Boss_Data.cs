@@ -30,7 +30,7 @@ public class Boss_Data : MonoBehaviour
 
     private const float INCOM_REG_AMOUNT = 0.005f;
     private const float OUTCOM_REG_AMOUNT = 0.01f;
-    private const float LOWHEAL_REG_AMOUNT = 0.05f;
+    private const float LOWHEAL_REG_AMOUNT = 0.07f;
     private const float LOWHEAL_REG_LIMIT = 0.6f;
 
 

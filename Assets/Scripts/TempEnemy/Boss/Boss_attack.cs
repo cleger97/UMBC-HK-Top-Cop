@@ -18,6 +18,7 @@ public class Boss_attack : MonoBehaviour
     //public float detectionCircleRadius;
     public float attackCircleRadius = 0.5f;
 
+    private const int BASE_DAMAGE = 25;
     private int damage;
     public Transform dmgArea;
     private float attackCD;
@@ -35,7 +36,7 @@ public class Boss_attack : MonoBehaviour
     private float runAtt_DurTimer;
     private float runAtt_gap;
 
-    private const float TORNADO_ATT_CD = 40f;
+    private const float TORNADO_ATT_CD = 25f;
     private float tornadoCDTimer;
     private const float TORNADO_DUR = 5f;
     private float tornado_DurTimer;
@@ -50,14 +51,14 @@ public class Boss_attack : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
 
-        damage = 30;
+        damage = BASE_DAMAGE;
         attackCD = 0.3f;
 
         tornado_DurTimer = TORNADO_DUR;
         runAtt_DurTimer = RUN_ATT_DUR;
         attackUp = false;
-        runAttCDTimer = Time.time + 10f;
-        tornadoCDTimer = Time.time + 15f;
+        runAttCDTimer = Time.time + 5f;
+        tornadoCDTimer = Time.time + 10f;
 
         skillGapTimer = Time.time;
 
@@ -68,31 +69,40 @@ public class Boss_attack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+   
         /*if (Time.time >= runAttCDTimer + RUN_ATT_CD)
             Debug.Log("1 ability is avaliable");
         else
             Debug.Log("1 ability is not avaliable");*/
     }
 
-    public int skill_CD_check()
+    public bool skill_CD_check(int givenSkill)
     {
-        if (Time.time <= skillGapTimer)
-            return BASIC_ATTACK;
 
-        if (Time.time >= runAttCDTimer )
-            return RUN_ATTACK;
-        else if (Time.time >= tornadoCDTimer)
-            return TORNADO_ATTACK;
-        else
-            return BASIC_ATTACK;
+        if (Time.time <= skillGapTimer)
+            return false;
+        
+        switch (givenSkill) {
+            case RUN_ATTACK:
+                if (Time.time >= runAttCDTimer)
+                    return true;
+                return false;
+            case TORNADO_ATTACK:
+                if (Time.time >= tornadoCDTimer)
+                    return true;
+                return false;
+            default:
+                return false;
+        }
+        
     }
 
-    public void reduce_att_CD(int time = 10)
+    public void reduce_att_CD()
     {
         if (Time.time < runAttCDTimer)
-            runAttCDTimer -= time;
+            runAttCDTimer -= ((runAttCDTimer - Time.time)/2);
         if (Time.time < tornadoCDTimer)
-            tornadoCDTimer -= time;
+            tornadoCDTimer -= ((tornadoCDTimer-Time.time)/2);
     }
 
     public bool rush_attack()
@@ -123,7 +133,7 @@ public class Boss_attack : MonoBehaviour
                 GameObject[] checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
                 if (checkInAttack.Length > 0)
                 {
-                    afflict_damage(checkInAttack[0]);
+                    afflict_damage(checkInAttack[0],(int)(0.9*damage));
                 }
                 runAtt_gap = 0.5f;
             }
@@ -154,7 +164,7 @@ public class Boss_attack : MonoBehaviour
                 GameObject[] checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
                 if (checkInAttack.Length > 0)
                 {
-                    afflict_damage(checkInAttack[0]);
+                    afflict_damage(checkInAttack[0],(int)(0.8*damage));
                 }
                 torAtt_gap = 0.5f;
             }
@@ -182,14 +192,12 @@ public class Boss_attack : MonoBehaviour
     }
 
 
-    public bool startAttack()
+    public int startAttack()
     {
         //anim.SetBool("isAttack", true);
         GameObject[] checkInAttack = Enemy.colliderTagSorter("Player", Enemy.getAllAround(attackCircleRadius, dmgArea));
         if (checkInAttack.Length > 0)
         {
-            Debug.Log("in start attack");
-            //anim.SetInteger("speed", 0);
             if (attackCD > 0)
             {
                 attackCD -= Time.deltaTime;
@@ -198,16 +206,16 @@ public class Boss_attack : MonoBehaviour
                     anim.SetBool("isAttack", true);
 
                 }
-                return true;
+                return 1;
             }
-            afflict_damage(checkInAttack[0]);
+            afflict_damage(checkInAttack[0],damage);
             
             attackCD = random_attCD();
             anim.SetBool("isAttack", false);
-            return true;
+            return 2;
         }
         else
-            return false;
+            return 3;
     }
 
     private float random_attCD()
@@ -219,12 +227,12 @@ public class Boss_attack : MonoBehaviour
     }
 
 
-    private void afflict_damage(GameObject givenPlayer)
+    private void afflict_damage(GameObject givenPlayer,int calDamage = BASE_DAMAGE)
     {
         Player playerScript = givenPlayer.transform.GetComponent<Player>();
         float distance = givenPlayer.transform.position.x - this.transform.position.x;
         int direction = (int)Mathf.Sign(distance);
-        playerScript.GetHit(damage, direction);
+        playerScript.GetHit(calDamage, direction);
 
         Vector3 dir = givenPlayer.transform.position - transform.position;
         dir = dir.normalized;
@@ -282,7 +290,7 @@ public class Boss_attack : MonoBehaviour
 
     private void set_skillGapTimer()
     {
-        float waitTime = Random.Range(5f, 15f);
+        float waitTime = Random.Range(3f, 7f);
         skillGapTimer = Time.time + waitTime;
     }
 

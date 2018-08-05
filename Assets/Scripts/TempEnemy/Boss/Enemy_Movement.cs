@@ -77,11 +77,11 @@ public class Enemy_Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (faceDir == FACE_LEFT)
+        /*if (faceDir == FACE_LEFT)
             Debug.Log("FACE_LEFT");
         else
             Debug.Log("FACE_RIGHT");
-
+            */
         if (hitEdge)
         {
             if (leaveEdgeTimer > 0)
@@ -199,7 +199,7 @@ public class Enemy_Movement : MonoBehaviour
         if (turningTimer < 0)
         {
             turningTimer = Random.Range(2f,4f);
-            Debug.Log(turningTimer);
+            //Debug.Log(turningTimer);
             faceDir = faceDirection;
             isTurning = false;
             return;
@@ -332,7 +332,7 @@ public class Enemy_Movement : MonoBehaviour
 
     public void change_dir()
     {
-        hitEdge = true;
+        
         faceDir = -faceDir;
         transform.localScale = new Vector3(-faceDir, transform.localScale.y, transform.localScale.z);
     }
@@ -342,5 +342,16 @@ public class Enemy_Movement : MonoBehaviour
         float distance = Random.Range(1f, 4f);
         right_end_pos = transform.position.x + distance;
         left_end_pos = transform.position.x - distance;
+    }
+
+    public void face_toward()
+    {
+        anim.SetInteger("speed", SLOW_SPEED);
+        float distance = calc_distance();
+        if (distance > 0 && faceDir == FACE_RIGHT)
+            change_dir();
+        else if (distance < 0 && faceDir == FACE_LEFT)
+            change_dir();
+        
     }
 }
